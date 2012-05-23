@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="carTypeNameList">
+  		<item>大型汽车号牌</item> 
+  		<item>小型汽车号牌</item> 
+  		<item>使馆汽车号牌</item> 
+  		<item>领管汽车号牌</item> 
+  		<item>境外汽车号牌</item> 
+  		<item>外籍汽车号牌</item> 
+  		<item>两，三轮摩托车号牌</item> 
+  		<item>轻便摩托车号牌</item> 
+  		<item>使馆摩托车号牌</item> 
+  		<item>领管摩托车号牌</item> 
+  		<item>境外摩托车号牌</item> 
+  		<item>外籍摩托车号牌</item> 
+  		<item>农用运输车号牌</item> 
+  		<item>拖拉机号牌</item> 
+  		<item>挂车号牌</item> 
+  		<item>教练汽车号牌</item> 
+  		<item>教练摩托车号牌</item> 
+  		<item>实验汽车号牌</item> 
+  		<item>实验摩托车号牌</item> 
+  		<item>临时入境汽车号牌</item> 
+  		<item>临时入境摩托车号牌</item> 
+  		<item>临时行驶汽车号牌</item> 
+  		<item>公安警车号牌</item> 
+  		<item>其他号牌</item>
+    </string-array>
+    
+    <integer-array name="carTypeValueList">
+          <item>01</item>
+  <item>02</item>
+  <item>03</item>
+  <item>04</item>
+  <item>05</item>
+  <item>06</item>
+  <item>07</item>
+  <item>08</item>
+  <item>09</item>
+  <item>10</item>
+  <item>11</item>
+  <item>12</item>
+  <item>13</item>
+  <item>14</item>
+  <item>15</item>
+  <item>16</item>
+  <item>17</item>
+  <item>18</item>
+  <item>19</item>
+  <item>20</item>
+  <item>21</item>
+  <item>22</item>
+  <item>23</item>
+  <item>99</item>
+    </integer-array>
+    
+</resources>

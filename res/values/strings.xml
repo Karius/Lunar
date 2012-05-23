@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="hello">Hello World, LunarActivity!</string>
+    <string name="app_name">徐州汽车违章查询</string>
+    <string name="txtView_DatabaseLabel">数据库日期</string>
+    <string name="txtView_DatabaseDate">0000&#8211;00&#8211;00</string>
+    <string name="txtView_CarIDLabel">车牌号码</string>
+    <string name="txtView_CarEngieID">发动机号（后六位）</string>
+    <string name="btn_Query">查询</string>
+    <string name="btn_History">历史记录</string>
+    <string name="tvCarIDXZ">苏C</string>
+    <string name="btnTextHistory">历史记录</string>
+    <string name="tvCarType">机动车类型</string>
+
+</resources>

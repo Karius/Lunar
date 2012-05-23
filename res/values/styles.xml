@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="homeTitleBackground">
+        <item name="android:background">@drawable/bg_header</item>
+    </style>
+    <style name="homeTitle">
+        <item name="android:windowTitleSize">45dp</item>
+        <item name="android:windowTitleBackgroundStyle">@style/homeTitleBackground</item>
+    </style>
+    
+    <style name="tvLabel">
+        <item name="android:textColor">@color/tvLabel</item>
+    </style>
+
+    <style name="header_action_additional">
+        <item name="android:textSize">@dimen/header_action</item>
+        <item name="android:typeface">sans</item>
+        <item name="android:textStyle">normal</item>
+        <item name="android:textColor">@color/selector_btn_header_action</item>
+        <item name="android:background">@drawable/selector_btn_action_additional</item>
+    </style>
+    
+    <style name="button_action_submit">
+        <item name="android:textSize">@dimen/button_submit</item>
+        <item name="android:typeface">sans</item>
+        <item name="android:textStyle">normal</item>
+        <item name="android:textColor">@color/selector_btn_action_submit</item>
+        <item name="android:background">@drawable/selector_btn_action_submit</item>
+    </style>
+</resources>
