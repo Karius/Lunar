@@ -17,10 +17,10 @@ public class LunarActivity extends Activity {
         //setContentView(R.layout.main);
         
         super.onCreate(savedInstanceState);  
-        requestWindowFeature(Window.FEATURE_CUSTOM_TITLE);  
+        //requestWindowFeature(Window.FEATURE_CUSTOM_TITLE);  
         setContentView(R.layout.main);  
-        getWindow().setFeatureInt(Window.FEATURE_CUSTOM_TITLE, R.layout.hometitle); 
-        
+        //getWindow().setFeatureInt(Window.FEATURE_CUSTOM_TITLE, R.layout.hometitle); 
+
         initComp ();
         setListeners ();
     }

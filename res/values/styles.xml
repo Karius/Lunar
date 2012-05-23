@@ -1,5 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <style name="Common_Theme" parent="@android:style/Theme">
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:typeface">sans</item>
+    </style>
+    <style name="panel_background">
+        <item name="android:background">@drawable/shape_panel_background</item>
+    </style>
+    
     <style name="homeTitleBackground">
         <item name="android:background">@drawable/bg_header</item>
     </style>

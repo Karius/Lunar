@@ -4,6 +4,6 @@
     <color name="header_action_disabled">#80ffffff</color>
     <color name="button_submit">#ffffffff</color>
     <color name="button_submit_disabled">#80ffffff</color>
-    
+    <color name="background">#fff0f4f7</color>
     <color name="tvLabel">#808080</color>
 </resources>

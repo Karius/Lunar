@@ -1,9 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>  
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"  
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    	android:background="@drawable/bg_header"
+    	android:paddingLeft="8.0sp"
+    	android:paddingTop="0.0sp"
+    	android:paddingRight="8.0sp"
+    	android:paddingBottom="0.0sp"    	  
         android:layout_width="fill_parent"   
         android:layout_height="wrap_content"  
-        android:orientation="horizontal"  
-        android:layout_gravity="center">  
+        android:orientation="horizontal">  
 
         <TextView
             android:id="@+id/headerTitle"

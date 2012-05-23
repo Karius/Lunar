@@ -2,9 +2,11 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:background="#FFFFFF"
-    android:orientation="vertical" >
-
+    android:orientation="vertical"
+    style="@style/panel_background" >
+
+    <include layout="@layout/hometitle" />
+
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
