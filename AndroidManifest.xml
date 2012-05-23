@@ -19,7 +19,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name="BreakRulesActivity" android:label="@string/breakrules_title"></activity>
+        <activity android:name="BreakRulesActivity" android:label="@string/breakrules_title" android:theme="@style/Common_Theme"></activity>
     </application>
 
 </manifest>

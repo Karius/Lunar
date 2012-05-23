@@ -20,6 +20,14 @@
         <item name="android:textColor">@color/tvLabel</item>
     </style>
 
+    <style name="header_action_back">
+        <item name="android:textSize">@dimen/header_action</item>
+        <item name="android:typeface">sans</item>
+        <item name="android:textStyle">normal</item>
+        <item name="android:textColor">@color/selector_btn_header_action</item>
+        <item name="android:background">@drawable/selector_btn_action_back</item>
+    </style>
+    
     <style name="header_action_additional">
         <item name="android:textSize">@dimen/header_action</item>
         <item name="android:typeface">sans</item>

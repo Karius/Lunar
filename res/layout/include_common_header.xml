@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>  
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    	android:background="@drawable/bg_header"
+    	android:paddingLeft="8.0sp"
+    	android:paddingTop="0.0sp"
+    	android:paddingRight="8.0sp"
+    	android:paddingBottom="0.0sp"    	  
+        android:layout_width="fill_parent"   
+        android:layout_height="wrap_content"  
+        android:orientation="horizontal">  
+
+    
+    	<Button 
+    	    android:gravity="center"
+    	    android:id="@+id/btnBack"
+    	    android:paddingLeft="10.0sp"
+    	    android:layout_width="wrap_content"
+    	    android:layout_height="wrap_content"
+    	    android:text="@string/btn_back"
+    	    style="@style/header_action_back" />
+
+        <TextView
+            android:id="@+id/commonTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="fill_parent"
+            android:layout_marginLeft="5dip"
+            android:layout_weight="1.0"
+            android:gravity="center"
+            android:singleLine="true"
+            android:text="@string/query_result"
+            android:textColor="#FFFFFF"
+            android:textSize="20sp" />
+
+        <Button 
+            android:id="@+id/btnOperate"
+            android:paddingLeft="12.0sp"
+            android:paddingTop="0.0sp"
+            android:paddingRight="12.0sp"
+            android:paddingBottom="0.0sp"
+            android:visibility="invisible"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/btn_back"
+            style="@style/header_action_additional" />
+
+</LinearLayout>  

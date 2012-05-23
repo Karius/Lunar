@@ -21,7 +21,7 @@ public class LunarActivity extends Activity {
         setContentView(R.layout.main);  
         //getWindow().setFeatureInt(Window.FEATURE_CUSTOM_TITLE, R.layout.hometitle); 
 
-        initComp ();
+        initComponents ();
         setListeners ();
     }
     
@@ -32,7 +32,7 @@ public class LunarActivity extends Activity {
     private TextView view_result;
     private TextView view_suggest;*/
 
-    private void initComp()
+    private void initComponents ()
     {
     	button_query = (Button) findViewById(R.id.btnQuery);
         /*field_height = (EditText) findViewById(R.id.height);

@@ -12,5 +12,7 @@
     <string name="tvCarIDXZ">苏C</string>
     <string name="btnTextHistory">历史记录</string>
     <string name="tvCarType">机动车类型</string>
+    <string name="btn_back">返回</string>
+    <string name="query_result">违章信息</string>
 
 </resources>
