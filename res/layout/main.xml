@@ -6,7 +6,7 @@
     style="@style/panel_background" >
 
     <include layout="@layout/hometitle" />
-
+
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -17,46 +17,97 @@
             style="@style/tvLabel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentLeft="true"
             android:layout_alignParentTop="true"
-            android:layout_marginLeft="17dp"
-            android:layout_marginTop="46dp"
+			android:layout_marginLeft="30dp"
+            android:layout_marginRight="25dp"
+            android:layout_marginTop="22dp"
             android:text="@string/txtView_DatabaseLabel"
             android:textAppearance="?android:attr/textAppearanceMedium" />
 
         <TextView
-            android:id="@+id/textView2"
+            android:id="@+id/tvDatabaseDate"
             style="@style/tvLabel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignBaseline="@+id/textView1"
             android:layout_alignBottom="@+id/textView1"
-            android:layout_marginLeft="45dp"
             android:layout_toRightOf="@+id/textView1"
+            android:textColor="#ff0000"
             android:text="@string/txtView_DatabaseDate"
+            android:textAppearance="?android:attr/textAppearanceMedium" />        
+
+
+        <TextView
+            android:id="@+id/textView5"
+            style="@style/tvLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@+id/textView1"
+            android:layout_below="@+id/textView1"
+            android:layout_marginTop="24dp"
+            android:text="@string/tvCarType"
             android:textAppearance="?android:attr/textAppearanceMedium" />
 
+        <Spinner
+            android:id="@+id/spiCarTypeList"
+            android:layout_width="250dp"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@+id/textView5"
+            android:layout_marginTop="8dp"
+            android:layout_below="@+id/textView5" />
+        
+        
+        <TextView
+            android:id="@+id/textView3"
+            style="@style/tvLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/spiCarTypeList"
+            android:layout_alignLeft="@+id/spiCarTypeList"
+            android:layout_marginTop="15dp"
+            android:text="@string/txtView_CarIDLabel"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
+        
         <AutoCompleteTextView
-            android:id="@+id/carEngineID"
+            android:id="@+id/fieldCarID"
             android:layout_width="150dp"
             android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:layout_marginBottom="124dp"
+            android:layout_below="@+id/textView3"
+            android:layout_alignLeft="@+id/textView3"
+            android:layout_marginTop="8dp"
             android:ems="10"
-            android:maxLength="6"
-            android:singleLine="true" />
+            android:maxLength="7"
+            android:singleLine="true"
+            android:hint="@string/txtView_CarIDLabel"
+            android:text="@string/tvCarIDXZ" >
+
+            <requestFocus />
+        </AutoCompleteTextView>
+        
 
         <TextView
             android:id="@+id/textView4"
             style="@style/tvLabel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_above="@+id/carEngineID"
-            android:layout_alignLeft="@+id/carEngineID"
-            android:layout_marginBottom="32dp"
+            android:layout_below="@+id/fieldCarID"
+            android:layout_alignLeft="@+id/fieldCarID"
+            android:layout_marginTop="15dp"
             android:text="@string/txtView_CarEngieID"
             android:textAppearance="?android:attr/textAppearanceMedium" />
 
+        <AutoCompleteTextView
+            android:id="@+id/carEngineID"
+            android:layout_width="150dp"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@+id/textView4"
+            android:layout_below="@+id/textView4"
+            android:layout_marginTop="8dp"
+            android:hint="@string/txtView_CarEngieID"
+            android:ems="10"
+            android:maxLength="6"
+            android:singleLine="true" />
+        
         <Button
             android:id="@+id/btnQuery"
             style="@style/button_action_submit"
@@ -67,50 +118,8 @@
             android:layout_toRightOf="@+id/carEngineID"
             android:text="@string/btn_Query" />
 
-        <AutoCompleteTextView
-            android:id="@+id/fieldCarID"
-            android:layout_width="150dp"
-            android:layout_height="wrap_content"
-            android:layout_above="@+id/textView4"
-            android:layout_marginBottom="28dp"
-            android:layout_toLeftOf="@+id/btnQuery"
-            android:ems="10"
-            android:maxLength="7"
-            android:singleLine="true"
-            android:text="@string/tvCarIDXZ" >
 
-            <requestFocus />
-        </AutoCompleteTextView>
 
-        <TextView
-            android:id="@+id/textView3"
-            style="@style/tvLabel"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_above="@+id/fieldCarID"
-            android:layout_alignLeft="@+id/fieldCarID"
-            android:layout_marginBottom="14dp"
-            android:text="@string/txtView_CarIDLabel"
-            android:textAppearance="?android:attr/textAppearanceMedium" />
-
-        <TextView
-            android:id="@+id/textView5"
-            style="@style/tvLabel"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_above="@+id/textView3"
-            android:layout_marginBottom="28dp"
-            android:layout_toLeftOf="@+id/textView2"
-            android:text="@string/tvCarType"
-            android:textAppearance="?android:attr/textAppearanceMedium" />
-
-        <Spinner
-            android:id="@+id/spiCarTypeList"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignBottom="@+id/textView3"
-            android:layout_alignLeft="@+id/textView5"
-            android:layout_alignRight="@+id/btnQuery" />
 
     </RelativeLayout>
 

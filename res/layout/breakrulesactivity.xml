@@ -6,7 +6,7 @@
     style="@style/panel_background">
 
     <include layout="@layout/include_common_header" />
-    
+
     <TabHost
         android:id="@android:id/tabhost"
         android:layout_width="match_parent"
@@ -17,21 +17,30 @@
             android:layout_height="match_parent"
             android:orientation="vertical" >
 
-            <TabWidget
-                android:id="@android:id/tabs"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" >
-            </TabWidget>
 
             <FrameLayout
                 android:id="@android:id/tabcontent"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent" >
+                android:layout_width="fill_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1.0" >
 
                 <LinearLayout
                     android:id="@+id/tab1"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent" >
+                    android:layout_width="fill_parent"
+                    android:layout_height="fill_parent" >
+
+                    <ListView
+                        android:id="@+id/listView1"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1" >
+                    </ListView>
+<Button
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:text="ZenMEKanBuDao"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
+
                 </LinearLayout>
 
                 <LinearLayout
@@ -40,13 +49,26 @@
                     android:layout_height="match_parent" >
                 </LinearLayout>
 
-                <LinearLayout
-                    android:id="@+id/tab3"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent" >
-                </LinearLayout>
             </FrameLayout>
+
+            <TabWidget
+                android:id="@android:id/tabs"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="0" >
+            </TabWidget>           
+            
+            
         </LinearLayout>
     </TabHost>
-
+<Button
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:text="ZenMEKanBuDao"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
+<Button
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:text="ZenMEKanBuDao"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
 </LinearLayout>

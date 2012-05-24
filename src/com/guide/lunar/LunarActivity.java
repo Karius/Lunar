@@ -13,12 +13,12 @@ public class LunarActivity extends Activity {
     /** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        //super.onCreate(savedInstanceState);
-        //setContentView(R.layout.main);
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.main);
         
-        super.onCreate(savedInstanceState);  
+        //super.onCreate(savedInstanceState);  
         //requestWindowFeature(Window.FEATURE_CUSTOM_TITLE);  
-        setContentView(R.layout.main);  
+        //setContentView(R.layout.main);  
         //getWindow().setFeatureInt(Window.FEATURE_CUSTOM_TITLE, R.layout.hometitle); 
 
         initComponents ();
@@ -34,7 +34,7 @@ public class LunarActivity extends Activity {
 
     private void initComponents ()
     {
-    	button_query = (Button) findViewById(R.id.btnQuery);
+    	button_query = (Button) findViewById (R.id.btnQuery);
         /*field_height = (EditText) findViewById(R.id.height);
         field_weight = (EditText) findViewById(R.id.weight);
         view_result = (TextView) findViewById(R.id.result);
@@ -44,7 +44,8 @@ public class LunarActivity extends Activity {
     	
     	ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource( 
                 this, R.array.carTypeNameList, 
-                android.R.layout.simple_spinner_dropdown_item); 
+                android.R.layout.simple_spinner_item);
+    	adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner_CarTypeList.setAdapter(adapter);
         spinner_CarTypeList.setSelection(1, true);
         //spinner_CarTypeList.setSelection(1);
