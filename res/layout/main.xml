@@ -36,44 +36,20 @@
             android:text="@string/txtView_DatabaseDate"
             android:textAppearance="?android:attr/textAppearanceMedium" />        
 
-
-        <TextView
-            android:id="@+id/textView5"
-            style="@style/tvLabel"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignLeft="@+id/textView1"
-            android:layout_below="@+id/textView1"
-            android:layout_marginTop="24dp"
-            android:text="@string/tvCarType"
-            android:textAppearance="?android:attr/textAppearanceMedium" />
-
         <Spinner
             android:id="@+id/spiCarTypeList"
             android:layout_width="220dp"
             android:layout_height="wrap_content"
-            android:layout_alignLeft="@+id/textView5"
-            android:layout_marginTop="8dp"
-            android:layout_below="@+id/textView5" />
-        
-        
-        <TextView
-            android:id="@+id/textView3"
-            style="@style/tvLabel"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/spiCarTypeList"
-            android:layout_alignLeft="@+id/spiCarTypeList"
-            android:layout_marginTop="15dp"
-            android:text="@string/txtView_CarIDLabel"
-            android:textAppearance="?android:attr/textAppearanceMedium" />
+            android:layout_alignLeft="@+id/textView1"
+            android:layout_marginTop="35dp"
+            android:layout_below="@+id/textView1" />
         
         <AutoCompleteTextView
             android:id="@+id/fieldCarID"
             android:layout_width="220dp"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/textView3"
-            android:layout_alignLeft="@+id/textView3"
+            android:layout_below="@+id/spiCarTypeList"
+            android:layout_alignLeft="@+id/spiCarTypeList"
             android:layout_marginTop="8dp"
             android:ems="10"
             android:maxLength="7"
@@ -84,38 +60,27 @@
             <requestFocus />
         </AutoCompleteTextView>
         
-
-        <TextView
-            android:id="@+id/textView4"
-            style="@style/tvLabel"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/fieldCarID"
-            android:layout_alignLeft="@+id/fieldCarID"
-            android:layout_marginTop="15dp"
-            android:text="@string/txtView_CarEngieID"
-            android:textAppearance="?android:attr/textAppearanceMedium" />
-
         <AutoCompleteTextView
             android:id="@+id/carEngineID"
             android:layout_width="220dp"
             android:layout_height="wrap_content"
-            android:layout_alignLeft="@+id/textView4"
-            android:layout_below="@+id/textView4"
+            android:layout_alignLeft="@+id/fieldCarID"
+            android:layout_below="@+id/fieldCarID"
             android:layout_marginTop="8dp"
             android:hint="@string/txtView_CarEngieID"
             android:ems="10"
             android:maxLength="6"
             android:singleLine="true" />
-
+
         <Button
             android:id="@+id/btnQuery"
             style="@style/button_action_submit"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:layout_centerHorizontal="true"
-            android:layout_marginBottom="34dp"
+            android:layout_alignLeft="@+id/carEngineID"
+            android:layout_alignRight="@+id/tvDatabaseDate"
+            android:layout_below="@+id/carEngineID"
+            android:layout_marginTop="50dp"
             android:text="@string/btn_Query" />
 
     </RelativeLayout>
