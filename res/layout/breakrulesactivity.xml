@@ -61,16 +61,6 @@
                 android:layout_weight="0" >
             </TabWidget>
             
-            <RadioGroup
-            	android:id="@+id/tab_group"
-            	android:layout_width="fill_parent"
-            	android:layout_height="50dp"
-            	android:gravity="center_vertical"
-            	android:layout_gravity="bottom"
-            	android:orientation="horizontal"
-            	android:background="@drawable/tab_bar_bg"
-            	android:checkedButton="@+id/tab2">
-            </RadioGroup>
             
 			<LinearLayout 
 			    android:gravity="bottom" 
@@ -92,12 +82,11 @@
 	                	android:layout_width="fill_parent" 
 	                	android:layout_height="fill_parent">
 	
-		                <!-- 第一个标签，注意button属性设置成null，以此去掉自带的radio button-->
-		            	<!-- 注意：id="@id/tab1"，为什么不是+id呢？这个和加载先后有关系,Google一下吧 -->
 		            	<RadioButton
-		                	android:id="@id/tab1"
+		                	android:id="@+id/tabBtnLocal"
 		                	android:text="@string/tabLocalInfo"
-		                	android:drawableTop="@drawable/tab_weixin"
+		                	android:drawableTop="@drawable/tab_bendi"
+		                	android:checked="true"
 		                	style="@style/MMTabButton" />
 	                </LinearLayout>
 <!--  出现 -->	                
@@ -107,11 +96,12 @@
 	                	android:layout_width="fill_parent" 
 	                	android:layout_height="fill_parent">	                    
 	                    <TextView 
+	                        android:id="@+id/tvLocalCount"
 	                    	android:textSize="10.0dip" 
 	                    	android:textColor="#FFFFFF" 
 	                    	android:gravity="center" 
 	                    	android:background="@drawable/tab_unread_bg" 
-	                    	android:visibility="visible" 
+	                    	android:visibility="invisible" 
 	                    	android:layout_width="wrap_content" 
 	                    	android:layout_height="wrap_content" 
 	                    	android:text="@null" />
@@ -121,10 +111,10 @@
 			
 				<FrameLayout android:background="@null" android:layout_width="0.0dip" android:layout_height="fill_parent" android:layout_weight="1.0">
 	                <LinearLayout android:gravity="bottom|center" android:layout_width="fill_parent" android:layout_height="fill_parent">
-	                    <RadioButton android:id="@id/tab2" android:text="@string/tabRemoteInfo" android:drawableTop="@drawable/tab_settings" style="@style/MMTabButton" />
+	                    <RadioButton android:id="@+id/tabBtnRemote" android:text="@string/tabRemoteInfo" android:drawableTop="@drawable/tab_yidi" style="@style/MMTabButton" />
 	                </LinearLayout>
 	                <LinearLayout android:gravity="top|right|center" android:paddingRight="10.0dip" android:layout_width="fill_parent" android:layout_height="fill_parent">
-	                    <TextView android:textSize="10.0dip" android:textColor="#FFFFFF" android:gravity="center" android:id="@+id/tab_setting_new_tv" android:background="@drawable/tab_unread_bg" android:visibility="visible" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@null" />
+	                    <TextView android:textSize="10.0dip" android:textColor="#FFFFFF" android:gravity="center" android:id="@+id/tvRemoteCount" android:background="@drawable/tab_unread_bg" android:visibility="invisible" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@null" />
 	                </LinearLayout>
 	            </FrameLayout>			
  
