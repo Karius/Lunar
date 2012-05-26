@@ -4,8 +4,10 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     style="@style/panel_background">
-
-    <include layout="@layout/include_common_header" />
+
+    <include
+        android:layout_width="wrap_content"
+        layout="@layout/include_common_header" />
 
     <TabHost
         android:id="@android:id/tabhost"
@@ -53,22 +55,82 @@
 
             <TabWidget
                 android:id="@android:id/tabs"
+                android:visibility="gone"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="0" >
-            </TabWidget>           
+            </TabWidget>
             
+            <RadioGroup
+            	android:id="@+id/tab_group"
+            	android:layout_width="fill_parent"
+            	android:layout_height="50dp"
+            	android:gravity="center_vertical"
+            	android:layout_gravity="bottom"
+            	android:orientation="horizontal"
+            	android:background="@drawable/tab_bar_bg"
+            	android:checkedButton="@+id/tab2">
+            </RadioGroup>
+            
+			<LinearLayout 
+			    android:gravity="bottom" 
+			    android:layout_gravity="bottom" 
+			    android:orientation="horizontal" 
+			    android:id="@+id/main_tab_group" 
+			    android:background="@drawable/tab_bar_bg" 
+			    android:paddingTop="2.0dip" 
+			    android:layout_width="fill_parent" 
+			    android:layout_height="wrap_content">
+
+				<FrameLayout 
+					android:background="@null" 
+					android:layout_width="0.0dip" 
+					android:layout_height="fill_parent" 
+					android:layout_weight="1.0">	
+	                <LinearLayout 
+	                	android:gravity="bottom|center" 
+	                	android:layout_width="fill_parent" 
+	                	android:layout_height="fill_parent">
+	
+		                <!-- 第一个标签，注意button属性设置成null，以此去掉自带的radio button-->
+		            	<!-- 注意：id="@id/tab1"，为什么不是+id呢？这个和加载先后有关系,Google一下吧 -->
+		            	<RadioButton
+		                	android:id="@id/tab1"
+		                	android:text="@string/tabLocalInfo"
+		                	android:drawableTop="@drawable/tab_weixin"
+		                	style="@style/MMTabButton" />
+	                </LinearLayout>
+<!--  出现 -->	                
+	                <LinearLayout 
+	                	android:gravity="top|right|center" 
+	                	android:paddingRight="10.0dip" 
+	                	android:layout_width="fill_parent" 
+	                	android:layout_height="fill_parent">	                    
+	                    <TextView 
+	                    	android:textSize="10.0dip" 
+	                    	android:textColor="#FFFFFF" 
+	                    	android:gravity="center" 
+	                    	android:background="@drawable/tab_unread_bg" 
+	                    	android:visibility="visible" 
+	                    	android:layout_width="wrap_content" 
+	                    	android:layout_height="wrap_content" 
+	                    	android:text="@null" />
+	                </LinearLayout>	
+	            </FrameLayout>
+
+			
+				<FrameLayout android:background="@null" android:layout_width="0.0dip" android:layout_height="fill_parent" android:layout_weight="1.0">
+	                <LinearLayout android:gravity="bottom|center" android:layout_width="fill_parent" android:layout_height="fill_parent">
+	                    <RadioButton android:id="@id/tab2" android:text="@string/tabRemoteInfo" android:drawableTop="@drawable/tab_settings" style="@style/MMTabButton" />
+	                </LinearLayout>
+	                <LinearLayout android:gravity="top|right|center" android:paddingRight="10.0dip" android:layout_width="fill_parent" android:layout_height="fill_parent">
+	                    <TextView android:textSize="10.0dip" android:textColor="#FFFFFF" android:gravity="center" android:id="@+id/tab_setting_new_tv" android:background="@drawable/tab_unread_bg" android:visibility="visible" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@null" />
+	                </LinearLayout>
+	            </FrameLayout>			
+ 
+            				</LinearLayout>
             
         </LinearLayout>
     </TabHost>
-<Button
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:text="ZenMEKanBuDao"
-            android:textAppearance="?android:attr/textAppearanceMedium" />
-<Button
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:text="ZenMEKanBuDao"
-            android:textAppearance="?android:attr/textAppearanceMedium" />
+
 </LinearLayout>

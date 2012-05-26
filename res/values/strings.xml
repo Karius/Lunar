@@ -14,5 +14,6 @@
     <string name="tvCarType">机动车类型</string>
     <string name="btn_back">返回</string>
     <string name="query_result">违章信息</string>
-
+	<string name="tabLocalInfo">本地</string>
+	<string name="tabRemoteInfo">异地/现场</string>
 </resources>
