@@ -6,7 +6,8 @@
     style="@style/panel_background" >
 
     <include layout="@layout/hometitle" />
-
+	
+	<ScrollView android:layout_width="fill_parent" android:layout_height="fill_parent">
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -86,5 +87,5 @@
             android:textColor="#ff0000" />
 
     </RelativeLayout>
-
+</ScrollView>
 </LinearLayout>

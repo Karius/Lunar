@@ -28,9 +28,9 @@
 
                 <LinearLayout
                     android:id="@+id/tab1"
-                    android:layout_width="fill_parent"
-                    android:layout_height="fill_parent" >
-
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent" >
+">
                     <ListView
                         android:id="@+id/lvLocal"
                         android:layout_width="match_parent"
@@ -38,24 +38,24 @@
                         android:visibility="gone"
                         android:layout_weight="0" >
                     </ListView>
+                    
 					<TextView
 					    android:id="@+id/tvLocal"
-			            android:layout_width="fill_parent"
-			            android:layout_height="fill_parent"
+			            android:layout_width="match_parent"
+			            android:layout_height="match_parent"
 			            android:gravity="center"
 			            android:visibility="visible"
 			            android:text="@string/tvNoLocalInfo"
 			            android:textColor="#000000"
 			            android:textAppearance="?android:attr/textAppearanceMedium" />
-
+					
                 </LinearLayout>
 
                 <LinearLayout
                     android:id="@+id/tab2"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent" >
-					
-                    
+
                     <ListView
                         android:id="@+id/lvRemote"
                         android:layout_width="match_parent"
@@ -63,6 +63,7 @@
                         android:visibility="gone"
                         android:layout_weight="0" >
                     </ListView>
+                
 					<TextView
 					    android:id="@+id/tvRemote"
 			            android:layout_width="fill_parent"
