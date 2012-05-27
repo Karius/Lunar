@@ -8,6 +8,9 @@ import android.widget.Button;
 import android.widget.Spinner;
 import android.widget.ArrayAdapter;
 import android.view.Window;
+import android.widget.TextView;
+import android.app.Service;
+import android.os.Vibrator;
 
 public class LunarActivity extends Activity {
     /** Called when the activity is first created. */
@@ -27,6 +30,7 @@ public class LunarActivity extends Activity {
     
     private Button button_query;
     private Spinner spinner_CarTypeList;
+    private TextView tvDatabaseDate;
     /*private EditText field_height;
     private EditText field_weight;
     private TextView view_result;
@@ -35,6 +39,7 @@ public class LunarActivity extends Activity {
     private void initComponents ()
     {
     	button_query = (Button) findViewById (R.id.btnQuery);
+    	tvDatabaseDate = (TextView) findViewById (R.id.tvDatabaseDate);
         /*field_height = (EditText) findViewById(R.id.height);
         field_weight = (EditText) findViewById(R.id.weight);
         view_result = (TextView) findViewById(R.id.result);
@@ -49,6 +54,15 @@ public class LunarActivity extends Activity {
         spinner_CarTypeList.setAdapter(adapter);
         spinner_CarTypeList.setSelection(1, true);
         //spinner_CarTypeList.setSelection(1);
+        
+        tvDatabaseDate.setOnLongClickListener(new View.OnLongClickListener () {
+        	public boolean onLongClick (View v) {
+        		doVibrate ();
+        		
+        		return true;
+        	}
+        });
+        
     }
     
     //Listen for button clicks
@@ -66,4 +80,13 @@ public class LunarActivity extends Activity {
               startActivity(intent);
            }
      };
+     
+     private void doVibrate () {
+    	 Vibrator vt;
+    	 
+    	 vt = (Vibrator) getApplication().getSystemService(Service.VIBRATOR_SERVICE);
+    	 
+    	 vt.vibrate(500);
+    	 
+     }
 }

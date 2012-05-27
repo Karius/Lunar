@@ -24,7 +24,7 @@ public class BreakRulesActivity extends Activity {
 		initComponents ();
 		setListeners ();
 		
-		setViolationCount (LOCAL, 01);
+		setViolationCount (LOCAL, 0);
 		setViolationCount (REMOTE, 1);
 	}
 	

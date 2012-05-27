@@ -22,35 +22,25 @@
             android:layout_marginRight="25dp"
             android:layout_marginTop="22dp"
             android:text="@string/txtView_DatabaseLabel"
-            android:textAppearance="?android:attr/textAppearanceMedium" />
-
-        <TextView
-            android:id="@+id/tvDatabaseDate"
-            style="@style/tvLabel"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignBaseline="@+id/textView1"
-            android:layout_alignBottom="@+id/textView1"
-            android:layout_toRightOf="@+id/textView1"
-            android:textColor="#ff0000"
-            android:text="@string/txtView_DatabaseDate"
             android:textAppearance="?android:attr/textAppearanceMedium" />        
 
         <Spinner
             android:id="@+id/spiCarTypeList"
-            android:layout_width="220dp"
-            android:layout_height="wrap_content"
+            android:layout_width="260dp"
+            android:layout_height="40dip"
             android:layout_alignLeft="@+id/textView1"
             android:layout_marginTop="35dp"
+            android:background="@drawable/selector_spinner_bg"
             android:layout_below="@+id/textView1" />
         
         <AutoCompleteTextView
             android:id="@+id/fieldCarID"
-            android:layout_width="220dp"
+            android:layout_width="260dp"
             android:layout_height="wrap_content"
             android:layout_below="@+id/spiCarTypeList"
             android:layout_alignLeft="@+id/spiCarTypeList"
             android:layout_marginTop="8dp"
+            android:background="@drawable/selector_comm_edittext_bg"
             android:ems="10"
             android:maxLength="7"
             android:singleLine="true"
@@ -62,26 +52,38 @@
         
         <AutoCompleteTextView
             android:id="@+id/carEngineID"
-            android:layout_width="220dp"
+            android:layout_width="260dp"
             android:layout_height="wrap_content"
             android:layout_alignLeft="@+id/fieldCarID"
             android:layout_below="@+id/fieldCarID"
             android:layout_marginTop="8dp"
             android:hint="@string/txtView_CarEngieID"
+            android:background="@drawable/selector_comm_edittext_bg"
             android:ems="10"
             android:maxLength="6"
             android:singleLine="true" />
-
+
         <Button
             android:id="@+id/btnQuery"
-            style="@style/button_action_submit"
+            style="@style/button_common"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignLeft="@+id/carEngineID"
-            android:layout_alignRight="@+id/tvDatabaseDate"
+            android:layout_alignRight="@+id/carEngineID"
             android:layout_below="@+id/carEngineID"
             android:layout_marginTop="50dp"
             android:text="@string/btn_Query" />
+
+        <TextView
+            android:id="@+id/tvDatabaseDate"
+            style="@style/tvLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/spiCarTypeList"
+            android:layout_alignRight="@+id/spiCarTypeList"
+            android:text="@string/txtView_DatabaseDate"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:textColor="#ff0000" />
 
     </RelativeLayout>
 

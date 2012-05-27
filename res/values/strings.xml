@@ -16,4 +16,6 @@
     <string name="query_result">违章信息</string>
 	<string name="tabLocalInfo">本地</string>
 	<string name="tabRemoteInfo">异地/现场</string>
+	<string name="tvNoLocalInfo">未发现本地违章信息</string>
+	<string name="tvNoRemoteInfo">未发现异地或现场违章信息</string>
 </resources>
