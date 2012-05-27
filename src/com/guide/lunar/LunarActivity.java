@@ -47,11 +47,11 @@ public class LunarActivity extends Activity {
     	
     	spinner_CarTypeList = (Spinner) findViewById(R.id.spiCarTypeList);
     	
-    	ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource( 
+    	/*ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource( 
                 this, R.array.carTypeNameList, 
                 android.R.layout.simple_spinner_item);
     	adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinner_CarTypeList.setAdapter(adapter);
+        spinner_CarTypeList.setAdapter(adapter);*/
         spinner_CarTypeList.setSelection(1, true);
         //spinner_CarTypeList.setSelection(1);
         

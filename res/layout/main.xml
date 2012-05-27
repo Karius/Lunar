@@ -5,7 +5,7 @@
     android:orientation="vertical"
     style="@style/panel_background" >
 
-    <include layout="@layout/hometitle" />
+    <include layout="@layout/include_main_header" />
 	
 	<ScrollView android:layout_width="match_parent" android:layout_height="match_parent">
 	    <RelativeLayout
@@ -47,7 +47,8 @@
 	            android:layout_marginRight="10.0dip"
 	            android:layout_marginTop="40dp"
 	            android:background="@drawable/selector_spinner_bg"
-	            android:layout_below="@+id/textView1" />
+	            android:layout_below="@+id/textView1"
+	            android:entries="@array/carTypeNameList" />
 	        
 	        <AutoCompleteTextView
 	            android:id="@+id/fieldCarID"
