@@ -24,7 +24,17 @@
 	            android:layout_marginTop="22dip"
 	            android:text="@string/txtView_DatabaseLabel"
 	            android:textAppearance="?android:attr/textAppearanceMedium" />
-
+
+	        <ProgressBar
+	            android:id="@+id/pbUpdateDatabaseDate"
+	            style="?android:attr/progressBarStyleSmall"
+	            android:visibility="invisible"
+	            android:layout_width="18dip"
+	            android:layout_height="18dip"
+	            android:layout_marginTop="4dip"
+	            android:layout_marginRight="3dip"
+	            android:layout_alignTop="@+id/tvDatabaseDate"
+	            android:layout_toLeftOf="@+id/tvDatabaseDate" />
 	        <TextView
 	            android:id="@+id/tvDatabaseDate"
 	            style="@style/tvLabel"
@@ -51,7 +61,7 @@
 	            android:entries="@array/carTypeNameList" />
 	        
 	        <AutoCompleteTextView
-	            android:id="@+id/fieldCarID"
+	            android:id="@+id/carID"
 	            android:layout_width="match_parent"
 	            android:layout_height="wrap_content"
 	            android:layout_alignParentLeft="true"
@@ -68,7 +78,7 @@
 	
 	            <requestFocus />
 	        </AutoCompleteTextView>
-	        
+
 	        <AutoCompleteTextView
 	            android:id="@+id/carEngineID"
 	            android:layout_width="match_parent"
@@ -77,9 +87,10 @@
 	            android:layout_marginLeft="10.0dip"
 	            android:layout_marginRight="10.0dip"
 	            android:layout_marginTop="10dp"
-	            android:layout_below="@+id/fieldCarID"
+	            android:layout_below="@+id/carID"
 	            android:hint="@string/txtView_CarEngieID"
 	            android:background="@drawable/selector_comm_edittext_bg"
+	            android:digits="1234567890abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
 	            android:ems="10"
 	            android:maxLength="6"
 	            android:singleLine="true" />

@@ -9,10 +9,19 @@ import android.widget.Button;
 import android.widget.TabHost;
 import android.widget.RadioButton;
 
-public class BreakRulesActivity extends Activity {
+public class ViolationActivity extends Activity {
 	
 	public static final int LOCAL  = 0;
-	public static final int REMOTE = 1;
+	public static final int NONLOCAL = 1;
+
+	private Button button_back;
+	private TabHost tabHost;
+	private RadioButton[] tabBtnArray;
+	private TextView tvLocalCount;
+	private TextView tvNonlocalCount;
+
+	private ViolationManager localVio = null;
+	private ViolationManager nonlocalVio = null;
 
 
 	/** Called when the activity is first created. */
@@ -24,22 +33,42 @@ public class BreakRulesActivity extends Activity {
 		initComponents ();
 		setListeners ();
 		
-		setViolationCount (LOCAL, 0);
-		setViolationCount (REMOTE, 1);
+		initData ();
 	}
 	
-	private Button button_back;
-	private TabHost tabHost;
-	private RadioButton[] tabBtnArray;
-	private TextView tvLocalCount;
-	private TextView tvRemoteCount;
+	private void initData () {
+//		Intent i = getIntent ();
+//		ViolationData d = i.getParcelableExtra("key");
+//		setViolationCount (LOCAL, d.count);
+//		if (d.datamap.isEmpty ()) {
+//			setViolationCount (REMOTE, 99);
+//		}
+		//ViolationResult vr = i.getParcelableExtra("violation");
+		
+		//setViolationCount (LOCAL, vr.localViolation().size());
+		//setViolationCount (REMOTE, vr.nonlocalViolation().size());
+		
+		
+		ViolationResult vr = ((MainApp)getApplication ()).getViolationResult();
+		localVio = vr.localViolation();
+		nonlocalVio = vr.nonlocalViolation();
+		
+		setViolationCount (LOCAL, localVio.size());
+		setViolationCount (NONLOCAL, nonlocalVio.size());
+		
+		if (localVio.size () == 0 && nonlocalVio.size () > 0) {
+			setCurrentTab (1);
+		}
+	}
+	
+
 	
     private void initComponents ()
     {
     	button_back = (Button) findViewById(R.id.btnBack);
     	
     	tvLocalCount = (TextView) findViewById (R.id.tvLocalCount);
-    	tvRemoteCount = (TextView) findViewById (R.id.tvRemoteCount);
+    	tvNonlocalCount = (TextView) findViewById (R.id.tvRemoteCount);
    	
     	tabBtnArray = new RadioButton[2];
     	tabBtnArray[0] = (RadioButton) findViewById (R.id.tabBtnLocal);
@@ -53,9 +82,22 @@ public class BreakRulesActivity extends Activity {
     }
     
     private void setViolationCount (int btnType, int count) {
-    	TextView tv = (btnType == LOCAL) ? tvLocalCount : tvRemoteCount;
+    	TextView tv = (btnType == LOCAL) ? tvLocalCount : tvNonlocalCount;
     	tv.setVisibility((count > 0) ? View.VISIBLE : View.INVISIBLE);
     	tv.setText(Integer.toString(count));
+    }
+    
+    private void setCurrentTab (int pos) {
+    	int index = 0;
+    	for (RadioButton tabBtn:tabBtnArray) {
+    		if (pos == index) {
+    			tabBtn.setChecked(true);
+    			tabHost.setCurrentTab(index);
+    		} else {
+    			tabBtn.setChecked(false);
+    		}
+    		index++;
+    	}
     }
     
     private class OnTabClickListener implements View.OnClickListener {
@@ -79,7 +121,7 @@ public class BreakRulesActivity extends Activity {
 	    	{
 	          public void onClick(View v)
 	          {
-	        	  BreakRulesActivity.this.finish(); 
+	        	  ViolationActivity.this.finish(); 
 	          }
 	    	});
     	

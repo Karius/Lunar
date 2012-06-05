@@ -36,33 +36,27 @@ public class Utility {
 		}
 	}
 	
+	static public void openWifiSettings (final Context paramContext) {
+        Intent mIntent = new Intent("/");
+        ComponentName comp = new ComponentName("com.android.settings",
+                "com.android.settings.WirelessSettings");
+        mIntent.setComponent(comp);
+        mIntent.setAction("android.intent.action.VIEW");
+        paramContext.startActivity(mIntent);
+	}
 	
-	static public void setNetwork(final Context paramContext, String title, String msg, String btnOk, String btnCancel)
+	
+	static public void showAlertDialog(final Context paramContext, String title, String msg, 
+			String btnOk, String btnCancel,
+			DialogInterface.OnClickListener okClick,
+			DialogInterface.OnClickListener cancelClick)
     {
         AlertDialog.Builder builder = new AlertDialog.Builder(paramContext);
         builder.setIcon(android.R.drawable.ic_dialog_alert);
         builder.setTitle(title);
         builder.setMessage(msg);
-        builder.setPositiveButton(btnOk, new DialogInterface.OnClickListener() {
-            
-            // @Override
-            public void onClick(DialogInterface dialog, int which) {
-                // TODO Auto-generated method stub
-                Intent mIntent = new Intent("/");
-                ComponentName comp = new ComponentName("com.android.settings",
-                        "com.android.settings.WirelessSettings");
-                mIntent.setComponent(comp);
-                mIntent.setAction("android.intent.action.VIEW");
-                paramContext.startActivity(mIntent);
-            }
-        });
-        builder.setNegativeButton(btnCancel, new DialogInterface.OnClickListener() {
-            
-            // @Override
-            public void onClick (DialogInterface dialog, int which) {
-                dialog.cancel();
-            }
-        });
+        builder.setPositiveButton(btnOk, okClick);
+        builder.setNegativeButton(btnCancel, cancelClick);
         builder.create();
         builder.show();
     }
