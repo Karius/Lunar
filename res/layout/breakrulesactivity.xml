@@ -57,7 +57,7 @@
                     android:layout_height="match_parent" >
 
                     <ListView
-                        android:id="@+id/lvRemote"
+                        android:id="@+id/lvNonlocal"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:visibility="gone"
@@ -65,7 +65,7 @@
                     </ListView>
                 
 					<TextView
-					    android:id="@+id/tvRemote"
+					    android:id="@+id/tvNonlocal"
 			            android:layout_width="match_parent"
 			            android:layout_height="match_parent"
 			            android:gravity="center"

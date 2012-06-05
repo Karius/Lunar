@@ -8,6 +8,11 @@ import android.widget.TextView;
 import android.widget.Button;
 import android.widget.TabHost;
 import android.widget.RadioButton;
+import android.widget.ListView;
+import android.widget.SimpleAdapter;
+import java.util.ArrayList;
+import java.util.Map;
+import java.util.HashMap;
 
 public class ViolationActivity extends Activity {
 	
@@ -19,9 +24,17 @@ public class ViolationActivity extends Activity {
 	private RadioButton[] tabBtnArray;
 	private TextView tvLocalCount;
 	private TextView tvNonlocalCount;
+	
+	private ListView lvLocal;
+	private ListView lvNonlocal;
+	private TextView tvLocalNone;
+	private TextView tvNonlocalNone;
 
 	private ViolationManager localVio = null;
 	private ViolationManager nonlocalVio = null;
+	
+	private ArrayList<Map<String, Object>> localList = new ArrayList<Map<String, Object>>();
+	private ArrayList<Map<String, Object>> nonlocalList = new ArrayList<Map<String, Object>>();
 
 
 	/** Called when the activity is first created. */
@@ -59,6 +72,36 @@ public class ViolationActivity extends Activity {
 		if (localVio.size () == 0 && nonlocalVio.size () > 0) {
 			setCurrentTab (1);
 		}
+		
+		// 填充本地数据
+		for (int i=0; i< localVio.size ();i++) {
+			Map<String, Object> item = new HashMap<String, Object>();
+			item.put("date", localVio.getList ().get(i).violationDateStr);
+			item.put("loc", localVio.getList ().get(i).illegalLocations);
+			item.put("traffic", localVio.getList ().get(i).trafficViolations);
+			localList.add(item);
+		}
+		
+		SimpleAdapter a = new SimpleAdapter (this, localList, R.layout.listview_item_violation_local,
+				new String []{"date", "loc", "traffic"},
+				new int[]{R.id.tvDate, R.id.tvLocations, R.id.tvTraffic});
+		
+		lvLocal.setAdapter (a);
+		
+		// 填充异地数据
+		for (int i=0; i< nonlocalVio.size ();i++) {
+			Map<String, Object> item = new HashMap<String, Object>();
+			item.put("date", nonlocalVio.getList ().get(i).violationDateStr);
+			item.put("loc", nonlocalVio.getList ().get(i).illegalLocations);
+			item.put("traffic", nonlocalVio.getList ().get(i).trafficViolations);
+			nonlocalList.add(item);
+		}
+		
+		SimpleAdapter aNonlocal = new SimpleAdapter (this, nonlocalList, R.layout.listview_item_violation_local,
+				new String []{"date", "loc", "traffic"},
+				new int[]{R.id.tvDate, R.id.tvLocations, R.id.tvTraffic});
+		
+		lvNonlocal.setAdapter (aNonlocal);
 	}
 	
 
@@ -69,6 +112,11 @@ public class ViolationActivity extends Activity {
     	
     	tvLocalCount = (TextView) findViewById (R.id.tvLocalCount);
     	tvNonlocalCount = (TextView) findViewById (R.id.tvRemoteCount);
+    	
+    	lvLocal = (ListView) findViewById (R.id.lvLocal);
+    	lvNonlocal = (ListView) findViewById (R.id.lvNonlocal);
+    	tvLocalNone = (TextView) findViewById (R.id.tvLocal);
+    	tvNonlocalNone = (TextView) findViewById (R.id.tvNonlocal);
    	
     	tabBtnArray = new RadioButton[2];
     	tabBtnArray[0] = (RadioButton) findViewById (R.id.tabBtnLocal);
@@ -85,6 +133,14 @@ public class ViolationActivity extends Activity {
     	TextView tv = (btnType == LOCAL) ? tvLocalCount : tvNonlocalCount;
     	tv.setVisibility((count > 0) ? View.VISIBLE : View.INVISIBLE);
     	tv.setText(Integer.toString(count));
+    	
+    	if (LOCAL == btnType) {
+    		tvLocalNone.setVisibility((count > 0) ? View.GONE : View.VISIBLE);
+    		lvLocal.setVisibility((count > 0) ? View.VISIBLE : View.GONE);
+    	} else if (NONLOCAL == btnType) {
+    		tvNonlocalNone.setVisibility((count > 0) ? View.GONE : View.VISIBLE);
+    		lvNonlocal.setVisibility((count > 0) ? View.VISIBLE : View.GONE);
+    	}
     }
     
     private void setCurrentTab (int pos) {
