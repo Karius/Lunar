@@ -23,6 +23,10 @@ import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.impl.client.BasicResponseHandler;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.params.BasicHttpParams;
+import org.apache.http.params.CoreConnectionPNames;
+import org.apache.http.params.HttpConnectionParams;
+import org.apache.http.params.HttpParams;
 import org.apache.http.util.EntityUtils;
 import org.apache.http.client.ClientProtocolException;
 
@@ -31,30 +35,43 @@ import java.io.IOException;
 
 public class ViolationAcquirer {
 
-	public String httpGet (String urls) {
+	public String httpGet (String urls, int timeout) throws IOException {
 
+		//http://chenqing24.blog.163.com/blog/static/84653842011917104533280/
+		//http://www.360doc.com/content/10/0805/11/61497_43814046.shtml
+		//http://www.360doc.com/content/09/1201/18/203871_10149531.shtml
+		//http://simpleframework.net/blog/v/11410.html
+		//http://my.oschina.net/javagg/blog/16240
 		DefaultHttpClient httpclient = new DefaultHttpClient();
+		httpclient.getParams().setParameter(CoreConnectionPNames.CONNECTION_TIMEOUT, timeout);
+		httpclient.getParams().setParameter(CoreConnectionPNames.SO_TIMEOUT, timeout);
+
 		//HttpGet httpget = new HttpGet(urls);
-                HttpUriRequest request = new HttpGet (urls);
+        HttpUriRequest request = new HttpGet (urls);
 		//ResponseHandler
 		ResponseHandler<String> responseHandler = new BasicResponseHandler();
 
-                String content = null;
+        String content = null;
+        
+        //HttpParams httpParams = new BasicHttpParams(); 
+        //HttpConnectionParams.setConnectionTimeout (httpParams, )
 
-        try {
+        //try {
 			content = httpclient.execute(request, responseHandler);
-        } catch (ClientProtocolException e) {
+        /*} catch (ClientProtocolException e) {
         } catch (IOException e) {
 		} catch (Exception e) {
 			// e.printStackTrace();
-		}
+		}*/
 		httpclient.getConnectionManager().shutdown();
 
-                return content;
+        return content;
 	}
 
-    public String httpPost (String urls, HttpEntity entity, List<NameValuePair> headers) {
+    public String httpPost (String urls, HttpEntity entity, List<NameValuePair> headers, int timeout) throws IOException {
         DefaultHttpClient httpClient = new DefaultHttpClient ();
+        httpClient.getParams().setParameter(CoreConnectionPNames.CONNECTION_TIMEOUT, timeout);
+        httpClient.getParams().setParameter(CoreConnectionPNames.SO_TIMEOUT, timeout);
 
         HttpPost request = new HttpPost (urls);
         request.setEntity (entity);
@@ -65,29 +82,34 @@ public class ViolationAcquirer {
 
         String result = null;
 
-        try {
+        //try {
             HttpResponse response = httpClient.execute (request);
 
             if (response.getStatusLine ().getStatusCode () == 200) {
                 result = EntityUtils.toString (response.getEntity ());
             }
-            // else {
-            //     System.out.print (response.getStatusLine ().getStatusCode ());
-            // }
-        } catch (ClientProtocolException e) {
-        } catch (IOException e) {
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+//        } catch (ClientProtocolException e) {
+//        } catch (IOException e) {
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
 
-            return result;
+        return result;
     }
 
     public Date getDatebaseUpdateDate () {
 
         String urls = "http://www.xzjgw.com/2010cx/cars.asp";
 
-        String htmlContent = httpGet (urls);
+        String htmlContent = null;
+
+        try {
+        	htmlContent = httpGet (urls, 10000);
+        } catch (ClientProtocolException e) {
+        	return null;
+        } catch (IOException e) {
+			return null;
+		}
 
         if (htmlContent == null) {
             return null;
@@ -142,7 +164,7 @@ public class ViolationAcquirer {
             //entity = new UrlEncodedFormEntity(formParams, Consts.UTF_8);
             entity = new UrlEncodedFormEntity(formParams, "GBK");
 
-            htmlContent = httpPost (urls, entity, headers);
+            htmlContent = httpPost (urls, entity, headers, 10000);
             if (null == htmlContent) {
                 return new ViolationResult (ViolationResult.ERROR_NET);
             }
@@ -212,6 +234,10 @@ public class ViolationAcquirer {
                 }
             }
 
+        } catch (ClientProtocolException e) {
+        	return new ViolationResult (ViolationResult.ERROR_NET);
+        } catch (IOException e) {
+        	return new ViolationResult (ViolationResult.ERROR_NET);
         } catch (Exception e) {
             e.printStackTrace();
             return new ViolationResult (ViolationResult.ERROR_PARSE);

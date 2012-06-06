@@ -11,9 +11,9 @@ public class ViolationResult {//implements Parcelable {
 	public static final int ERROR_START = -2;
 	public static final int ERROR_UNKNOWN = -1;
 	public static final int ERROR_OK = 0;
-	public static final int ERROR_NET = 1;
-	public static final int ERROR_DATA = 2;
-	public static final int ERROR_PARSE = 3;
+	public static final int ERROR_NET = 1;      // 网络错误
+	public static final int ERROR_DATA = 2;     // 车辆数据输入错误
+	public static final int ERROR_PARSE = 3;    // 返回信息解析错误
 	public static final int ERROR_LAST = 4;
 	
 	private int errorType = ERROR_UNKNOWN;

@@ -79,12 +79,13 @@ public class ViolationActivity extends Activity {
 			item.put("date", localVio.getList ().get(i).violationDateStr);
 			item.put("loc", localVio.getList ().get(i).illegalLocations);
 			item.put("traffic", localVio.getList ().get(i).trafficViolations);
+			item.put("result", localVio.getList ().get(i).punishmentResults);
+			item.put("comment", localVio.getList ().get(i).comment);
 			localList.add(item);
-		}
-		
+		}		
 		SimpleAdapter a = new SimpleAdapter (this, localList, R.layout.listview_item_violation_local,
-				new String []{"date", "loc", "traffic"},
-				new int[]{R.id.tvDate, R.id.tvLocations, R.id.tvTraffic});
+				new String []{"date", "loc", "traffic", "result", "comment"},
+				new int[]{R.id.tvDate, R.id.tvLocations, R.id.tvTraffic, R.id.tvResult, R.id.tvComment});
 		
 		lvLocal.setAdapter (a);
 		
@@ -94,12 +95,13 @@ public class ViolationActivity extends Activity {
 			item.put("date", nonlocalVio.getList ().get(i).violationDateStr);
 			item.put("loc", nonlocalVio.getList ().get(i).illegalLocations);
 			item.put("traffic", nonlocalVio.getList ().get(i).trafficViolations);
+			item.put("number", nonlocalVio.getList ().get(i).ticketNumber);
+			item.put("fines", nonlocalVio.getList ().get(i).fines);
 			nonlocalList.add(item);
-		}
-		
-		SimpleAdapter aNonlocal = new SimpleAdapter (this, nonlocalList, R.layout.listview_item_violation_local,
-				new String []{"date", "loc", "traffic"},
-				new int[]{R.id.tvDate, R.id.tvLocations, R.id.tvTraffic});
+		}		
+		SimpleAdapter aNonlocal = new SimpleAdapter (this, nonlocalList, R.layout.listview_item_violation_nonlocal,
+				new String []{"date", "loc", "traffic", "number", "fines"},
+				new int[]{R.id.tvDate, R.id.tvLocations, R.id.tvTraffic, R.id.tvNumber, R.id.tvFines});
 		
 		lvNonlocal.setAdapter (aNonlocal);
 	}

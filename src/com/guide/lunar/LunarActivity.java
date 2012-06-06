@@ -68,6 +68,13 @@ public class LunarActivity extends Activity {
     //Listen for button clicks
     private void setListeners() {
     	button_query.setOnClickListener(showInfo);
+    	button_query.setOnLongClickListener(new View.OnLongClickListener () {
+        	public boolean onLongClick (View v) {
+        		queryViolationData ();
+        		return true;
+        	}
+        });
+
         tvDatabaseDate.setOnLongClickListener(new View.OnLongClickListener () {
         	public boolean onLongClick (View v) {
         		doVibrate ();
@@ -99,6 +106,11 @@ public class LunarActivity extends Activity {
         }
         
         return false;
+    }
+    
+    private void queryViolationData () {
+    	GetViolationTask gvt = new GetViolationTask ();
+  	  	gvt.execute();
     }
     
     private DialogInterface.OnClickListener wifiSetListener = new DialogInterface.OnClickListener() {
@@ -138,8 +150,7 @@ public class LunarActivity extends Activity {
     {
           public void onClick(View v)
           {
-        	  GetViolationTask gvt = new GetViolationTask ();
-        	  gvt.execute();
+        	  queryViolationData ();
 
 //        	  int carTypeSelectedPos = spinner_CarTypeList.getSelectedItemPosition();
 //        	  String[] carTypeArray = getResources ().getStringArray(R.array.carTypeValueList);
@@ -180,7 +191,7 @@ public class LunarActivity extends Activity {
 //              }
         	  //((MainApp)getApplication ()).setViolationResult(vResult);
               //Switch to report page
-              Intent intent = new Intent();
+              //Intent intent = new Intent();
               
               //DataExchanger d = new DataExchanger ();
               //d.datamap.put("v", va);
@@ -189,7 +200,7 @@ public class LunarActivity extends Activity {
               //d.datamap.put("v", new ViolationData (1));
               //d.count = 11;
               //intent.putExtra ("key", d);
-              intent.setClass(LunarActivity.this, ViolationActivity.class);
+              //intent.setClass(LunarActivity.this, ViolationActivity.class);
               //startActivity(intent);
            }
      };
@@ -278,12 +289,18 @@ public class LunarActivity extends Activity {
        	  	}
        	  	
        	  	if (vr != null) {
-	       	  	((MainApp)getApplication ()).setViolationResult(vr);
-	            //Switch to report page
-	            Intent intent = new Intent();
-	
-	            intent.setClass(LunarActivity.this, ViolationActivity.class);
-	            startActivity(intent);
+       	  		if (vr.getErrorType() == ViolationResult.ERROR_PARSE) {
+       	  			Toast.makeText(LunarActivity.this, "返回信息有错误", Toast.LENGTH_SHORT).show();
+       	  		} else if (vr.getErrorType() == ViolationResult.ERROR_NET) {
+       	  			Toast.makeText(LunarActivity.this, "网络连接异常，请检查网络", Toast.LENGTH_SHORT).show();
+       	  		} else if (vr.getErrorType() == ViolationResult.ERROR_DATA) {
+       	  			Toast.makeText(LunarActivity.this, "车辆数据错误。请检查车牌号与发动机号是否正确。注意 字母O,I,L等与数字0,1的区别。", Toast.LENGTH_SHORT).show();
+       	  		} else {
+		       	  	((MainApp)getApplication ()).setViolationResult(vr);
+		            Intent intent = new Intent();		
+		            intent.setClass(LunarActivity.this, ViolationActivity.class);
+		            startActivity(intent);
+       	  		}
        	  	}
           }  
 
