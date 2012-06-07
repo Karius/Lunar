@@ -9,25 +9,10 @@ import java.util.List;
 import java.util.Date;
 import java.text.SimpleDateFormat;
 
-import org.apache.http.Header;
-// import org.apache.http.Consts;
-import org.apache.http.client.ResponseHandler;
-import org.apache.http.HttpResponse;
 import org.apache.http.HttpEntity;
-import org.apache.http.entity.StringEntity;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.client.methods.HttpUriRequest;
-import org.apache.http.impl.client.BasicResponseHandler;
-import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
-import org.apache.http.params.BasicHttpParams;
-import org.apache.http.params.CoreConnectionPNames;
-import org.apache.http.params.HttpConnectionParams;
-import org.apache.http.params.HttpParams;
-import org.apache.http.util.EntityUtils;
 import org.apache.http.client.ClientProtocolException;
 
 import java.io.IOException;
@@ -35,67 +20,6 @@ import java.io.IOException;
 
 public class ViolationAcquirer {
 
-	public String httpGet (String urls, int timeout) throws IOException {
-
-		//http://chenqing24.blog.163.com/blog/static/84653842011917104533280/
-		//http://www.360doc.com/content/10/0805/11/61497_43814046.shtml
-		//http://www.360doc.com/content/09/1201/18/203871_10149531.shtml
-		//http://simpleframework.net/blog/v/11410.html
-		//http://my.oschina.net/javagg/blog/16240
-		DefaultHttpClient httpclient = new DefaultHttpClient();
-		httpclient.getParams().setParameter(CoreConnectionPNames.CONNECTION_TIMEOUT, timeout);
-		httpclient.getParams().setParameter(CoreConnectionPNames.SO_TIMEOUT, timeout);
-
-		//HttpGet httpget = new HttpGet(urls);
-        HttpUriRequest request = new HttpGet (urls);
-		//ResponseHandler
-		ResponseHandler<String> responseHandler = new BasicResponseHandler();
-
-        String content = null;
-        
-        //HttpParams httpParams = new BasicHttpParams(); 
-        //HttpConnectionParams.setConnectionTimeout (httpParams, )
-
-        //try {
-			content = httpclient.execute(request, responseHandler);
-        /*} catch (ClientProtocolException e) {
-        } catch (IOException e) {
-		} catch (Exception e) {
-			// e.printStackTrace();
-		}*/
-		httpclient.getConnectionManager().shutdown();
-
-        return content;
-	}
-
-    public String httpPost (String urls, HttpEntity entity, List<NameValuePair> headers, int timeout) throws IOException {
-        DefaultHttpClient httpClient = new DefaultHttpClient ();
-        httpClient.getParams().setParameter(CoreConnectionPNames.CONNECTION_TIMEOUT, timeout);
-        httpClient.getParams().setParameter(CoreConnectionPNames.SO_TIMEOUT, timeout);
-
-        HttpPost request = new HttpPost (urls);
-        request.setEntity (entity);
-
-        for (NameValuePair nvp : headers) {
-            request.setHeader (nvp.getName (), nvp.getValue ());
-        }
-
-        String result = null;
-
-        //try {
-            HttpResponse response = httpClient.execute (request);
-
-            if (response.getStatusLine ().getStatusCode () == 200) {
-                result = EntityUtils.toString (response.getEntity ());
-            }
-//        } catch (ClientProtocolException e) {
-//        } catch (IOException e) {
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
-
-        return result;
-    }
 
     public Date getDatebaseUpdateDate () {
 
@@ -104,7 +28,7 @@ public class ViolationAcquirer {
         String htmlContent = null;
 
         try {
-        	htmlContent = httpGet (urls, 10000);
+        	htmlContent = new HttpAction ().httpGet (urls, 30000);
         } catch (ClientProtocolException e) {
         	return null;
         } catch (IOException e) {
@@ -164,11 +88,17 @@ public class ViolationAcquirer {
             //entity = new UrlEncodedFormEntity(formParams, Consts.UTF_8);
             entity = new UrlEncodedFormEntity(formParams, "GBK");
 
-            htmlContent = httpPost (urls, entity, headers, 10000);
+            htmlContent = new HttpAction ().httpPost (urls, entity, headers, 30000);
             if (null == htmlContent) {
                 return new ViolationResult (ViolationResult.ERROR_NET);
             }
             htmlContent = new String(htmlContent.getBytes("ISO-8859-1"),"GBK");
+            
+            if (htmlContent != null) {
+            	if (htmlContent.indexOf("您输入的发动机号与车牌号码不符") >= 0) {
+            		return new ViolationResult (ViolationResult.ERROR_DATA);
+            	}
+            }
 
             // System.out.print (htmlContent);
 

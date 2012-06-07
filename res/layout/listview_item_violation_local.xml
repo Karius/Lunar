@@ -58,28 +58,6 @@
 	            android:layout_weight="1"
 	        android:textAppearance="?android:attr/textAppearanceSmall" />
     </LinearLayout>
-    
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" >
-	    <TextView
-	        style="@style/violationInfoText"
-	        android:layout_width="wrap_content"
-	        android:layout_height="wrap_content"
-	        android:text="处罚结果："
-	        android:layout_gravity="left"
-	        android:layout_weight="0"
-	        android:textAppearance="?android:attr/textAppearanceSmall" />
-	    <TextView
-	        style="@style/violationInfoText"
-	        android:id="@+id/tvResult"
-	        android:layout_width="wrap_content"
-	        android:layout_height="wrap_content"
-	        android:text="Small Text"
-	        android:layout_gravity="right"
-	        android:layout_weight="1"
-	        android:textAppearance="?android:attr/textAppearanceSmall" />
-    </LinearLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -102,4 +80,27 @@
 	        android:layout_weight="1"
 	        android:textAppearance="?android:attr/textAppearanceSmall" />
     </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" >
+	    <TextView
+	        style="@style/violationInfoText"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:text="处罚结果："
+	        android:layout_gravity="left"
+	        android:layout_weight="0"
+	        android:textAppearance="?android:attr/textAppearanceSmall" />
+	    <TextView
+	        style="@style/violationInfoText"
+	        android:id="@+id/tvResult"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:text="Small Text"
+	        android:layout_gravity="right"
+	        android:layout_weight="1"
+	        android:textAppearance="?android:attr/textAppearanceSmall" />
+    </LinearLayout>
+
 </LinearLayout>

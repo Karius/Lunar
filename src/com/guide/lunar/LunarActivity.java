@@ -70,7 +70,8 @@ public class LunarActivity extends Activity {
     	button_query.setOnClickListener(showInfo);
     	button_query.setOnLongClickListener(new View.OnLongClickListener () {
         	public boolean onLongClick (View v) {
-        		queryViolationData ();
+        		doVibrate ();
+        		queryViolationData (false);
         		return true;
         	}
         });
@@ -107,8 +108,19 @@ public class LunarActivity extends Activity {
         
         return false;
     }
-    
-    private void queryViolationData () {
+
+    private void queryViolationData (boolean fromCache) {
+    	/*if (fromCache) { // 首先从缓存中获取违章数据
+    		// ((MainApp)getApplication ()).setViolationResult(vr);
+    		if (true) { // 缓存中有相关数据
+	    		Intent intent = new Intent();		
+	            intent.setClass(LunarActivity.this, ViolationActivity.class);
+	            startActivity(intent);
+	            return;
+    		}
+    	}*/
+    	
+    	// 缓存中无相关数据，从网络获取
     	GetViolationTask gvt = new GetViolationTask ();
   	  	gvt.execute();
     }
@@ -133,7 +145,7 @@ public class LunarActivity extends Activity {
     	if (carId.length() != 7) {
     		Toast.makeText(LunarActivity.this, "车牌号不正确", Toast.LENGTH_SHORT).show();
     		return false;
-    	} else if (!carId.startsWith("苏C")) {
+    	} else if (!carId.toLowerCase().startsWith("苏c")) {
 			Toast.makeText(LunarActivity.this, "车牌号需为徐州牌照", Toast.LENGTH_SHORT).show();
 			return false;
 		}
@@ -150,7 +162,7 @@ public class LunarActivity extends Activity {
     {
           public void onClick(View v)
           {
-        	  queryViolationData ();
+        	  queryViolationData (true);
 
 //        	  int carTypeSelectedPos = spinner_CarTypeList.getSelectedItemPosition();
 //        	  String[] carTypeArray = getResources ().getStringArray(R.array.carTypeValueList);
@@ -320,7 +332,7 @@ public class LunarActivity extends Activity {
            	  if (!queryDataLegal (carType, carId, carEngineId)) {
            	  	return;
            	  }
-    		 progressDialog = ProgressDialog.show(LunarActivity.this, "获取违章信息", "请稍等...", true);
+    		 progressDialog = ProgressDialog.show(LunarActivity.this, "获取违章信息", "请稍等...", true, true);
           }  
 
     	 @Override
