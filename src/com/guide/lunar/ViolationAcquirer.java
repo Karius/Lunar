@@ -79,10 +79,12 @@ public class ViolationAcquirer {
         HttpEntity entity      = null;
         String     htmlContent = null;
 
-        ViolationManager vManager[] = {
-            new ViolationManager (ViolationData.LOCAL),
-            new ViolationManager (ViolationData.NONLOCAL)
-        };
+//        ViolationManager vManager[] = {
+//            new ViolationManager (ViolationManager.LOCAL),
+//            new ViolationManager (ViolationManager.NONLOCAL)
+//        };
+        
+        ViolationManager vManager = new ViolationManager ();
 
         try {
             //entity = new UrlEncodedFormEntity(formParams, Consts.UTF_8);
@@ -138,6 +140,8 @@ public class ViolationAcquirer {
                 if (brCount > 0) {
                     bp = Pattern.compile (breaksRuleItem);
                     mm = bp.matcher (infoBlock);
+                    
+                    int currViolationType = (index<=0) ? ViolationManager.LOCAL : ViolationManager.NONLOCAL;
 
                     // 遍历违章信息条目
                     while (mm.find ()) {
@@ -145,8 +149,8 @@ public class ViolationAcquirer {
                             continue;
                         }
 
-                        vManager[index].add (
-                                             vManager[index].newData ().fillData (
+                        vManager.add (
+                        				vManager.newData (currViolationType).fillData (
                                                                                   fixInfo (mm.group (1)),
                                                                                   fixInfo (mm.group (2)),
                                                                                   fixInfo (mm.group (3)),
@@ -173,7 +177,7 @@ public class ViolationAcquirer {
             return new ViolationResult (ViolationResult.ERROR_PARSE);
         }
 
-        return new ViolationResult (ViolationResult.ERROR_OK, vManager[0], vManager[1]);
+        return new ViolationResult (ViolationResult.ERROR_OK, vManager);
     }
 
     private String fixInfo (String info) {

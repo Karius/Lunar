@@ -30,8 +30,7 @@ public class ViolationActivity extends Activity {
 	private TextView tvLocalNone;
 	private TextView tvNonlocalNone;
 
-	private ViolationManager localVio = null;
-	private ViolationManager nonlocalVio = null;
+	private ViolationManager vioManager = null;
 	
 	private ArrayList<Map<String, Object>> localList = new ArrayList<Map<String, Object>>();
 	private ArrayList<Map<String, Object>> nonlocalList = new ArrayList<Map<String, Object>>();
@@ -63,24 +62,23 @@ public class ViolationActivity extends Activity {
 		
 		
 		ViolationResult vr = ((MainApp)getApplication ()).getViolationResult();
-		localVio = vr.localViolation();
-		nonlocalVio = vr.nonlocalViolation();
+		vioManager = vr.violationManager();
 		
-		setViolationCount (LOCAL, localVio.size());
-		setViolationCount (NONLOCAL, nonlocalVio.size());
+		setViolationCount (LOCAL, vioManager.localList().size());
+		setViolationCount (NONLOCAL, vioManager.nonlocalList().size());
 		
-		if (localVio.size () == 0 && nonlocalVio.size () > 0) {
+		if (vioManager.localList().size () == 0 && vioManager.nonlocalList().size () > 0) {
 			setCurrentTab (1);
 		}
 		
 		// 填充本地数据
-		for (int i=0; i< localVio.size ();i++) {
+		for (int i=0; i< vioManager.localList().size ();i++) {
 			Map<String, Object> item = new HashMap<String, Object>();
-			item.put("date", localVio.getList ().get(i).violationDateStr);
-			item.put("loc", localVio.getList ().get(i).illegalLocations);
-			item.put("traffic", localVio.getList ().get(i).trafficViolations);
-			item.put("result", localVio.getList ().get(i).punishmentResults);
-			item.put("comment", localVio.getList ().get(i).comment);
+			item.put("date", vioManager.localList().getList().get(i).violationDateStr);
+			item.put("loc", vioManager.localList().getList().get(i).illegalLocations);
+			item.put("traffic", vioManager.localList().getList().get(i).trafficViolations);
+			item.put("result", vioManager.localList().getList().get(i).punishmentResults);
+			item.put("comment", vioManager.localList().getList().get(i).comment);
 			localList.add(item);
 		}		
 		SimpleAdapter a = new SimpleAdapter (this, localList, R.layout.listview_item_violation_local,
@@ -90,13 +88,13 @@ public class ViolationActivity extends Activity {
 		lvLocal.setAdapter (a);
 		
 		// 填充异地数据
-		for (int i=0; i< nonlocalVio.size ();i++) {
+		for (int i=0; i< vioManager.nonlocalList().size ();i++) {
 			Map<String, Object> item = new HashMap<String, Object>();
-			item.put("date", nonlocalVio.getList ().get(i).violationDateStr);
-			item.put("loc", nonlocalVio.getList ().get(i).illegalLocations);
-			item.put("traffic", nonlocalVio.getList ().get(i).trafficViolations);
-			item.put("number", nonlocalVio.getList ().get(i).ticketNumber);
-			item.put("fines", nonlocalVio.getList ().get(i).fines);
+			item.put("date", vioManager.nonlocalList().getList ().get(i).violationDateStr);
+			item.put("loc", vioManager.nonlocalList().getList ().get(i).illegalLocations);
+			item.put("traffic", vioManager.nonlocalList().getList ().get(i).trafficViolations);
+			item.put("number", vioManager.nonlocalList().getList ().get(i).ticketNumber);
+			item.put("fines", vioManager.nonlocalList().getList ().get(i).fines);
 			nonlocalList.add(item);
 		}		
 		SimpleAdapter aNonlocal = new SimpleAdapter (this, nonlocalList, R.layout.listview_item_violation_nonlocal,

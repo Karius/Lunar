@@ -17,19 +17,16 @@ public class ViolationResult {//implements Parcelable {
 	public static final int ERROR_LAST = 4;
 	
 	private int errorType = ERROR_UNKNOWN;
-	private ViolationManager vLocalViolation;
-	private ViolationManager vNonlocalViolation;
+	private ViolationManager vioManager;
 	
 	public ViolationResult (int eType) {
 		setErrorType (eType);
 	}
 
-	public ViolationResult (int eType, ViolationManager local, ViolationManager nonlocal) {
+	public ViolationResult (int eType, ViolationManager vioManager) {
 		setErrorType (eType);
-		vLocalViolation = local;
-		vNonlocalViolation = nonlocal;
+		this.vioManager = vioManager;
 	}
-	
 	
 	public int getErrorType () {
 		return errorType;
@@ -39,14 +36,10 @@ public class ViolationResult {//implements Parcelable {
 		errorType = (eType <= ERROR_START || eType >= ERROR_LAST) ? ERROR_UNKNOWN : eType;
 	}
 	
-	public ViolationManager localViolation () {
-		return vLocalViolation;
+	public ViolationManager violationManager () {
+		return vioManager;
 	}
 
-	public ViolationManager nonlocalViolation () {
-		return vNonlocalViolation;
-	}
-	
 /*	// implements Parcelable interfaces
 	
 	//@Override
