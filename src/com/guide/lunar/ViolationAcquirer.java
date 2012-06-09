@@ -84,7 +84,7 @@ public class ViolationAcquirer {
 //            new ViolationManager (ViolationManager.NONLOCAL)
 //        };
         
-        ViolationManager vManager = new ViolationManager ();
+        ViolationManager vManager = new ViolationManager (cphm);
 
         try {
             //entity = new UrlEncodedFormEntity(formParams, Consts.UTF_8);

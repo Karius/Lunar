@@ -9,6 +9,8 @@ public class ViolationManager {
 
     public static final int LOCAL    = 1;
     public static final int NONLOCAL = 2;
+    
+    private String licenseNumber;
 
     public class ViolationData {
 
@@ -85,10 +87,14 @@ public class ViolationManager {
         
     }
     
+    // 违章数据集合类
     public class ViolationDataList {
+    	// 违章类型，本地/异地
     	int vType;
+    	// 违章数据List
     	List<ViolationData> vioDataList = new ArrayList<ViolationData> ();
     	
+    	// 构造函数
     	private ViolationDataList (int vType) {
     		this.vType = vType;
     	}
@@ -115,15 +121,26 @@ public class ViolationManager {
     public ViolationDataList vNonlocalList = new ViolationDataList (NONLOCAL);
 
 
-    public ViolationManager () {
+    public ViolationManager (String licenseNumber) {
+    	this.licenseNumber = licenseNumber;
+    }
+    
+    public final String getLicenseNumber () {
+    	return licenseNumber;
     }
 
+    public boolean isSomeLicenseNumber (String licenseNumber) {
+    	return this.licenseNumber.equalsIgnoreCase(licenseNumber);
+    }
 
     public ViolationData newData (int vType) {
         return new ViolationData (vType);
     }
 
     public ViolationManager add (ViolationData data) {
+    	if (!isSomeLicenseNumber (data.licenseNumber)) {
+    		return null;
+    	}
     	if (LOCAL == data.vType) {
     		vLocalList.add (data);
     	} else if (NONLOCAL == data.vType) {
@@ -132,11 +149,11 @@ public class ViolationManager {
         return this;
     }
 
-    public ViolationDataList localList () {
+    public final ViolationDataList localList () {
         return vLocalList;
     }
 
-    public ViolationDataList nonlocalList () {
+    public final ViolationDataList nonlocalList () {
         return vNonlocalList;
     }
 

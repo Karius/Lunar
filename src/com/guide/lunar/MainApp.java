@@ -3,13 +3,13 @@ package com.guide.lunar;
 import android.app.Application;
 
 public class MainApp extends Application {
-	private ViolationResult vResult;
+	private ViolationManager vManager;
 	
-	public ViolationResult getViolationResult () {
-		return vResult;
+	public ViolationManager getViolationManager () {
+		return vManager;
 	}
-	public void setViolationResult (ViolationResult vr) {
-		vResult = vr;
+	public void setViolationManager (ViolationManager vm) {
+		vManager = vm;
 	}
 
 }

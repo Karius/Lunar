@@ -47,6 +47,8 @@ public class LunarActivity extends Activity {
 
     private TextView tvDatabaseDate;
     private ProgressBar pbUpdateDatabaseDate;
+    
+    private Date mDatabaseUpdateDate = null;
 
     private void initComponents ()
     {
@@ -110,15 +112,22 @@ public class LunarActivity extends Activity {
     }
 
     private void queryViolationData (boolean fromCache) {
-    	/*if (fromCache) { // 首先从缓存中获取违章数据
-    		// ((MainApp)getApplication ()).setViolationResult(vr);
-    		if (true) { // 缓存中有相关数据
+    	if (fromCache) { // 首先从缓存中获取违章数据
+    		String licenseNumber = actvCarId.getText().toString();
+
+    		VehicleCache vc = new VehicleCache (this);
+    		// 查询数据库缓存中保存的违章记录日期
+    		Date databaseDate = vc.queryViolationDatabaseDate(licenseNumber);
+
+    		if (databaseDate != null && mDatabaseUpdateDate != null && !mDatabaseUpdateDate.after(databaseDate)) { // 缓存中有相关数据
+    			ViolationManager vm = vc.queryViolationData(licenseNumber, mDatabaseUpdateDate);
+    			((MainApp)getApplication ()).setViolationManager(vm);
 	    		Intent intent = new Intent();		
 	            intent.setClass(LunarActivity.this, ViolationActivity.class);
 	            startActivity(intent);
 	            return;
     		}
-    	}*/
+    	}
     	
     	// 缓存中无相关数据，从网络获取
     	GetViolationTask gvt = new GetViolationTask ();
@@ -244,6 +253,7 @@ public class LunarActivity extends Activity {
     	 @Override
          protected void onPostExecute(Date updateDate) {//后台任务执行完之后被调用，在ui线程执行  
               if(updateDate != null) {
+            	  mDatabaseUpdateDate = updateDate;
             	  SimpleDateFormat sdf = new SimpleDateFormat ("yyyy-MM-dd");
             	  tvDatabaseDate.setText(sdf.format(updateDate));
                   //Toast.makeText(LunarActivity.this, "数据库日期更新完成", Toast.LENGTH_LONG).show();  
@@ -308,7 +318,11 @@ public class LunarActivity extends Activity {
        	  		} else if (vr.getErrorType() == ViolationResult.ERROR_DATA) {
        	  			Toast.makeText(LunarActivity.this, "车辆数据错误。请检查车牌号与发动机号是否正确。注意 字母O,I,L等与数字0,1的区别。", Toast.LENGTH_SHORT).show();
        	  		} else {
-		       	  	((MainApp)getApplication ()).setViolationResult(vr);
+       	  			VehicleCache vc = new VehicleCache (LunarActivity.this);
+       	  			vc.addVehicleInfo(new VehicleCache.VehicleData(carType, carId, carEngineId));
+       	  			vc.addViolationData (mDatabaseUpdateDate, vr.violationManager());
+
+		       	  	((MainApp)getApplication ()).setViolationManager(vr.violationManager());
 		            Intent intent = new Intent();		
 		            intent.setClass(LunarActivity.this, ViolationActivity.class);
 		            startActivity(intent);

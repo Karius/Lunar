@@ -61,8 +61,7 @@ public class ViolationActivity extends Activity {
 		//setViolationCount (REMOTE, vr.nonlocalViolation().size());
 		
 		
-		ViolationResult vr = ((MainApp)getApplication ()).getViolationResult();
-		vioManager = vr.violationManager();
+		vioManager = ((MainApp)getApplication ()).getViolationManager();
 		
 		setViolationCount (LOCAL, vioManager.localList().size());
 		setViolationCount (NONLOCAL, vioManager.nonlocalList().size());

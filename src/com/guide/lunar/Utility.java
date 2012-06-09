@@ -9,7 +9,34 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.telephony.TelephonyManager;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.text.ParseException;
+
 public class Utility {
+	
+	// "yyyy-MM-dd"
+	static public Date Str2Date (String s, String fmt) {
+		try {
+			return new SimpleDateFormat (fmt).parse(s);
+		} catch (ParseException e) {
+		} catch (Exception e) {
+			
+		}
+		
+		return null;		
+	}
+	
+	// "yyyy-MM-dd HH:mm:ss"
+	static public String Date2Str (Date d, String fmt) {
+		try {
+			return new SimpleDateFormat (fmt).format(d);
+		} catch (Exception e) {
+			
+		}
+		
+		return null;
+	}
 
 	static public int checkNetworkAvailable (Context paramContext) {
 		ConnectivityManager mConnectivity = (ConnectivityManager)paramContext.getSystemService(Context.CONNECTIVITY_SERVICE);
