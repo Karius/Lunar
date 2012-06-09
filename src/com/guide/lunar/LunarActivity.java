@@ -186,13 +186,19 @@ public class LunarActivity extends Activity {
 	    		Date databaseDate = vc.queryViolationDatabaseDate(mLicenseNumber);
 	
 	    		// 如果数据库日期信息相等，则直接读缓存中的违章数据
-	    		if (databaseDate != null && mDatabaseUpdateDate != null && !mDatabaseUpdateDate.after(databaseDate)) { // 缓存中有相关数据
-	    			ViolationManager vm = vc.queryViolationData(new ViolationManager.VehicleData(mVehicleType, mLicenseNumber, mEngineNumber), mDatabaseUpdateDate);
-	    			((MainApp)getApplication ()).setViolationManager(vm);
-		    		Intent intent = new Intent();		
-		            intent.setClass(LunarActivity.this, ViolationActivity.class);
-		            startActivity(intent);
-		            return;
+	    		if ((mDatabaseUpdateDate == null) // 如果当前网站上的数据库更新日期未知（因为这代表着可能是网络故障）则直接读取缓存
+	    			// 否则检查网站更新日期与本地缓存中的日期是否相等，相等则读取缓存
+	    			|| (databaseDate != null && mDatabaseUpdateDate != null && !mDatabaseUpdateDate.after(databaseDate))) {
+
+	    			ViolationManager vm = vc.queryViolationData(new ViolationManager.VehicleData(mVehicleType, mLicenseNumber, mEngineNumber));
+	    			
+	    			if (null != vm) { // 如果吃哦你缓存中读取成功则显示他们
+		    			((MainApp)getApplication ()).setViolationManager(vm);
+			    		Intent intent = new Intent();		
+			            intent.setClass(LunarActivity.this, ViolationActivity.class);
+			            startActivity(intent);
+			            return;
+	    			}
 	    		}
     		}
     	}

@@ -362,14 +362,14 @@ public class VehicleCache {
 	}
 
 	// 获取指定车辆的违章信息
-	public ViolationManager queryViolationData (ViolationManager.VehicleData vd, Date currDatebaseDate) {
+	public ViolationManager queryViolationData (ViolationManager.VehicleData vd) {
 		// 查询索引记录表，是否存在指定车辆的违章信息
-		Date updateDate = queryViolationDatabaseDate (vd.licenseNumber);
+		int isExists = checkViolationCache (vd);
 		
 		ViolationManager vManager = null;
-		
-		// 如果有并且为最新数据库日期，则取出查询其违章信息时的数据库日期
-		if (null != updateDate && !currDatebaseDate.after(updateDate)) {
+
+		// 如果有该车辆信息
+		if (1 == isExists) {
 			dbOpen ();
 			// 开始查询该车辆所有违章数据信息
 			Cursor cursor= db.query(TABLE_VIOLATION_DATA, null,
