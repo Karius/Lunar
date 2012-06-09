@@ -259,6 +259,11 @@ public class LunarActivity extends Activity {
         	 VehicleCache vc = new VehicleCache (LunarActivity.this);    		 
      		 vdList = vc.queryAllVehicleInfo();
      		 
+     		 if (vdList.size() <= 0) {
+     			Toast.makeText(LunarActivity.this, "暂无历史数据", Toast.LENGTH_SHORT).show();
+     			 return;
+     		 }
+     		 
      		 String [] titleList = new String[vdList.size()];
      		 
      		 for (int i=0;i<titleList.length;i++) {
@@ -386,7 +391,7 @@ public class LunarActivity extends Activity {
        	  			Toast.makeText(LunarActivity.this, "车辆数据错误。请检查车牌号与发动机号是否正确。注意 字母O,I,L等与数字0,1的区别。", Toast.LENGTH_SHORT).show();
        	  		} else {
        	  			VehicleCache vc = new VehicleCache (LunarActivity.this);
-       	  			vc.addVehicleInfo(mVehicleData);
+       	  			vc.addVehicleInfo (mVehicleData);
        	  			vc.addViolationData (mDatabaseUpdateDate, vr.violationManager());
 
 		       	  	((MainApp)getApplication ()).setViolationManager(vr.violationManager());
@@ -409,36 +414,6 @@ public class LunarActivity extends Activity {
     	 @Override
           protected void onCancelled () {//在ui线程执行  
               //mProgressBar.setProgress(0);//进度条复位  
-          }  
-     }
-
-
-
-     class SelectVehicleHistoryTask extends AsyncTask<Void, Integer, ViolationManager.VehicleData> {
-    	 @Override  
-         protected ViolationManager.VehicleData doInBackground(Void...params) { //处理后台执行的任务，在后台线程执行
-    		 ViolationManager.VehicleData vd = null;
-    		 
-    		 VehicleCache vc = new VehicleCache (LunarActivity.this);    		 
-    		 List<ViolationManager.VehicleData> vdList = vc.queryAllVehicleInfo();
-    		 
-    		 return vd;
-    	 }
-
-    	 @Override
-    	 protected void onProgressUpdate(Integer... progress) {//在调用publishProgress之后被调用，在ui线程执行  
-          }  
-   
-    	 @Override
-         protected void onPostExecute(ViolationManager.VehicleData vd) {//后台任务执行完之后被调用，在ui线程执行  
-          }  
-
-    	 @Override
-          protected void onPreExecute () {//在 doInBackground(Params...)之前被调用，在ui线程执行  
-          }  
-
-    	 @Override
-          protected void onCancelled () {//在ui线程执行  
           }  
      }
 

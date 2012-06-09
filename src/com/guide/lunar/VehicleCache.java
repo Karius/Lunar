@@ -73,10 +73,10 @@ public class VehicleCache {
 			sqlStr = String.format(
 											"CREATE TABLE \"%s\" (" + 
 											"[id] integer PRIMARY KEY AUTOINCREMENT UNIQUE NOT NULL" +
-											",[vehicleType] text NOT NULL UNIQUE COLLATE NOCASE" +
-											",[licenseNumber] text NOT NULL UNIQUE COLLATE NOCASE" +
-											",[engineNumber] text NOT NULL UNIQUE COLLATE NOCASE" +
-											",[databaseUpdateDate] text COLLATE NOCASE" +
+											",[vehicleType] text NOT NULL COLLATE NOCASE" +
+											",[licenseNumber] text UNIQUE NOT NULL COLLATE NOCASE" +
+											",[engineNumber] text NOT NULL COLLATE NOCASE" +
+											",[databaseUpdateDate] text NOT NULL COLLATE NOCASE" +
 											");",
 											TABLE_VIOLATION_INDEX);
 			db.execSQL(sqlStr);
