@@ -1,6 +1,7 @@
 package com.guide.lunar;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
@@ -9,6 +10,7 @@ import android.text.TextWatcher;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.Spinner;
 import android.widget.AutoCompleteTextView;
 import android.widget.ArrayAdapter;
@@ -18,8 +20,11 @@ import android.widget.ProgressBar;
 import android.app.Service;
 import android.os.Vibrator;
 import android.widget.Toast; 
+
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.text.SimpleDateFormat;
 import android.app.ProgressDialog;
 
@@ -43,6 +48,7 @@ public class LunarActivity extends Activity {
         }
     }
     
+    private ImageButton btn_history;
     private Button button_query;
     private Spinner spinner_VehicleTypeList;
     private AutoCompleteTextView actvLicenseNumber;
@@ -62,6 +68,7 @@ public class LunarActivity extends Activity {
 
     private void initComponents ()
     {
+    	btn_history = (ImageButton) findViewById (R.id.btnHistory);
     	button_query = (Button) findViewById (R.id.btnQuery);
     	tvDatabaseDate = (TextView) findViewById (R.id.tvDatabaseDate);
     	pbUpdateDatabaseDate = (ProgressBar) findViewById (R.id.pbUpdateDatabaseDate);
@@ -80,6 +87,8 @@ public class LunarActivity extends Activity {
     
     //Listen for button clicks
     private void setListeners() {
+    	btn_history.setOnClickListener(showHistoryDialog);
+
     	button_query.setOnClickListener(showInfo);
     	button_query.setOnLongClickListener(new View.OnLongClickListener () {
         	public boolean onLongClick (View v) {
@@ -241,6 +250,43 @@ public class LunarActivity extends Activity {
   	  return true;
     }
     
+    private Button.OnClickListener showHistoryDialog = new Button.OnClickListener()
+    {
+    	List<ViolationManager.VehicleData> vdList = null;
+
+          public void onClick(View v)
+          {
+        	 VehicleCache vc = new VehicleCache (LunarActivity.this);    		 
+     		 vdList = vc.queryAllVehicleInfo();
+     		 
+     		 String [] titleList = new String[vdList.size()];
+     		 
+     		 for (int i=0;i<titleList.length;i++) {
+     			 titleList[i] = vdList.get(i).licenseNumber;
+     		 }
+
+     		 new AlertDialog.Builder(LunarActivity.this)
+     		 	.setTitle("查询历史")     		 
+     		 	.setItems (titleList, new DialogInterface.OnClickListener() {
+                 public void onClick(DialogInterface dialog, int which) {
+                	 ViolationManager.VehicleData vd = vdList.get(which);
+                	 
+                	 int pos = -1;
+                	 for(int i=0;i<mVehicleTypeArray.length;i++) {
+                		 if (mVehicleTypeArray[i].equalsIgnoreCase(vd.vehicleType)) {
+                			 pos = i;
+                			 break;
+                		 }
+                	 }
+                	 if (pos >= 0) {
+                		 spinner_VehicleTypeList.setSelection(pos);
+                	 }
+                	 actvLicenseNumber.setText(vd.licenseNumber);
+                	 actvEngineNumber.setText(vd.engineNumber);
+                 }
+     		 }).show ();
+          }
+     };
 
     private Button.OnClickListener showInfo = new Button.OnClickListener()
     {
@@ -365,4 +411,35 @@ public class LunarActivity extends Activity {
               //mProgressBar.setProgress(0);//进度条复位  
           }  
      }
+
+
+
+     class SelectVehicleHistoryTask extends AsyncTask<Void, Integer, ViolationManager.VehicleData> {
+    	 @Override  
+         protected ViolationManager.VehicleData doInBackground(Void...params) { //处理后台执行的任务，在后台线程执行
+    		 ViolationManager.VehicleData vd = null;
+    		 
+    		 VehicleCache vc = new VehicleCache (LunarActivity.this);    		 
+    		 List<ViolationManager.VehicleData> vdList = vc.queryAllVehicleInfo();
+    		 
+    		 return vd;
+    	 }
+
+    	 @Override
+    	 protected void onProgressUpdate(Integer... progress) {//在调用publishProgress之后被调用，在ui线程执行  
+          }  
+   
+    	 @Override
+         protected void onPostExecute(ViolationManager.VehicleData vd) {//后台任务执行完之后被调用，在ui线程执行  
+          }  
+
+    	 @Override
+          protected void onPreExecute () {//在 doInBackground(Params...)之前被调用，在ui线程执行  
+          }  
+
+    	 @Override
+          protected void onCancelled () {//在ui线程执行  
+          }  
+     }
+
 }
