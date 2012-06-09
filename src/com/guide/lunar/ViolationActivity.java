@@ -40,7 +40,7 @@ public class ViolationActivity extends Activity {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.breakrulesactivity);
+		setContentView(R.layout.violationactivity);
 		
 		initComponents ();
 		setListeners ();
@@ -75,7 +75,7 @@ public class ViolationActivity extends Activity {
 			Map<String, Object> item = new HashMap<String, Object>();
 			item.put("date", vioManager.localList().getList().get(i).violationDateStr);
 			item.put("loc", vioManager.localList().getList().get(i).illegalLocations);
-			item.put("traffic", vioManager.localList().getList().get(i).trafficViolations);
+			item.put("traffic", vioManager.localList().getList().get(i).unlawfulAction);
 			item.put("result", vioManager.localList().getList().get(i).punishmentResults);
 			item.put("comment", vioManager.localList().getList().get(i).comment);
 			localList.add(item);
@@ -91,7 +91,7 @@ public class ViolationActivity extends Activity {
 			Map<String, Object> item = new HashMap<String, Object>();
 			item.put("date", vioManager.nonlocalList().getList ().get(i).violationDateStr);
 			item.put("loc", vioManager.nonlocalList().getList ().get(i).illegalLocations);
-			item.put("traffic", vioManager.nonlocalList().getList ().get(i).trafficViolations);
+			item.put("traffic", vioManager.nonlocalList().getList ().get(i).unlawfulAction);
 			item.put("number", vioManager.nonlocalList().getList ().get(i).ticketNumber);
 			item.put("fines", vioManager.nonlocalList().getList ().get(i).fines);
 			nonlocalList.add(item);

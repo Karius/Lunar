@@ -62,13 +62,13 @@ public class ViolationAcquirer {
     }
 
     
-    public ViolationResult getBreaksRule (String hpzl, String cphm, String fdjh) {
+    public ViolationResult getBreaksRule (ViolationManager.VehicleData vd) {
         String urls = "http://www.xzjgw.com/chaxun/index.asp";
 
         List <NameValuePair> formParams = new ArrayList<NameValuePair>();
-        formParams.add(new BasicNameValuePair("hpzl", hpzl));
-        formParams.add(new BasicNameValuePair("cphm", cphm));
-        formParams.add(new BasicNameValuePair("fdjh", fdjh));
+        formParams.add(new BasicNameValuePair("hpzl", vd.vehicleType));
+        formParams.add(new BasicNameValuePair("cphm", vd.licenseNumber));
+        formParams.add(new BasicNameValuePair("fdjh", vd.engineNumber));
         // formParams.add(new BasicNameValuePair("image.x", "31"));
         // formParams.add(new BasicNameValuePair("image.y", "11"));
 
@@ -84,7 +84,7 @@ public class ViolationAcquirer {
 //            new ViolationManager (ViolationManager.NONLOCAL)
 //        };
         
-        ViolationManager vManager = new ViolationManager (cphm);
+        ViolationManager vManager = new ViolationManager (vd);
 
         try {
             //entity = new UrlEncodedFormEntity(formParams, Consts.UTF_8);

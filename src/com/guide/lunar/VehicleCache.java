@@ -30,7 +30,7 @@ public class VehicleCache {
 	//车牌号码
 	public final static String COLUMN_LICENSE_NUMBER = "licenseNumber";
 	//发动机号
-	public final static String COLUMN_ENGINE_ID = "engineId";
+	public final static String COLUMN_ENGINE_NUMBER = "engineNumber";
 	//罚单编号
 	public final static String COLUMN_TICKET_NUMBER = "ticketNumber";
 	//违章时间
@@ -46,21 +46,6 @@ public class VehicleCache {
 	//备注
 	public final static String COLUMN_COMMENT = "comment";
 
-	// 车辆相关管信息
-	public static class VehicleData {
-		// 车辆类型
-		public String type;
-		// 车牌号码
-		public String licenseNumber;
-		// 发动机号
-		public String engineId;
-		
-		public VehicleData (String type, String licenseNumber, String engineId) {
-			this.type = type;
-			this.licenseNumber = licenseNumber;
-			this.engineId = engineId;
-		}
-	}
 
 	private class DatabaseHelper extends SQLiteOpenHelper {
 		public DatabaseHelper (Context context) {
@@ -80,7 +65,7 @@ public class VehicleCache {
 											"[id] integer PRIMARY KEY AUTOINCREMENT UNIQUE NOT NULL" +
 											",[vehicleType] text NOT NULL COLLATE NOCASE" +
 											",[licenseNumber] text NOT NULL UNIQUE COLLATE NOCASE" +
-											",[engineId] text NOT NULL COLLATE NOCASE" +
+											",[engineNumber] text NOT NULL COLLATE NOCASE" +
 											");",
 											TABLE_VEHICLE_INFO);
 			db.execSQL(sqlStr);
@@ -88,7 +73,9 @@ public class VehicleCache {
 			sqlStr = String.format(
 											"CREATE TABLE \"%s\" (" + 
 											"[id] integer PRIMARY KEY AUTOINCREMENT UNIQUE NOT NULL" +
+											",[vehicleType] text NOT NULL UNIQUE COLLATE NOCASE" +
 											",[licenseNumber] text NOT NULL UNIQUE COLLATE NOCASE" +
+											",[engineNumber] text NOT NULL UNIQUE COLLATE NOCASE" +
 											",[databaseUpdateDate] text COLLATE NOCASE" +
 											");",
 											TABLE_VIOLATION_INDEX);
@@ -149,8 +136,8 @@ public class VehicleCache {
 
 
 	// 获取所有车辆数据
-	public List<VehicleData> queryAllVehicleInfo () {
-		List<VehicleData> l = new ArrayList<VehicleData> ();
+	public List<ViolationManager.VehicleData> queryAllVehicleInfo () {
+		List<ViolationManager.VehicleData> l = new ArrayList<ViolationManager.VehicleData> ();
 		
 		dbOpen ();
 
@@ -165,10 +152,10 @@ public class VehicleCache {
 		if (c.moveToFirst()){
 			do {
 				l.add(
-						new VehicleData (
+						new ViolationManager.VehicleData (
 								c.getString(c.getColumnIndexOrThrow(COLUMN_VEHICLE_TYPE)),
 								c.getString(c.getColumnIndexOrThrow(COLUMN_LICENSE_NUMBER)),
-								c.getString(c.getColumnIndexOrThrow(COLUMN_ENGINE_ID))
+								c.getString(c.getColumnIndexOrThrow(COLUMN_ENGINE_NUMBER))
 								)
 					);
 			} while (c.moveToNext());
@@ -179,7 +166,7 @@ public class VehicleCache {
 	}
 
 	// 根据车牌号码查询车辆数据历史信息
-	public VehicleData queryVehicleInfo (String licenseNumber) {
+	public ViolationManager.VehicleData queryVehicleInfo (String licenseNumber) {
 //		String sqlStr = String.format("SELECT * FROM %s " +
 //										"WHERE %s=%s",
 //										TABLE_VEHICLE_INFO,
@@ -195,13 +182,13 @@ public class VehicleCache {
 							new String[]{licenseNumber},
 							null, null,
 							"DESC");
-		VehicleData vd = null;
+		ViolationManager.VehicleData vd = null;
 
 		if (c.moveToFirst()) {
-			vd = new VehicleData (
+			vd = new ViolationManager.VehicleData (
 					c.getString(c.getColumnIndexOrThrow(COLUMN_VEHICLE_TYPE)),
 					c.getString(c.getColumnIndexOrThrow(COLUMN_LICENSE_NUMBER)),
-					c.getString(c.getColumnIndexOrThrow(COLUMN_ENGINE_ID))
+					c.getString(c.getColumnIndexOrThrow(COLUMN_ENGINE_NUMBER))
 				);
 		}
 
@@ -230,16 +217,16 @@ public class VehicleCache {
 	}
 
 	// 新增车辆信息
-	public boolean addVehicleInfo (VehicleData vd) {
+	public boolean addVehicleInfo (ViolationManager.VehicleData vd) {
 		// 一般需要首先先查数据表中是否已存在该车辆的信息数据
 		// 但该表在创建时，车牌号列使用了UNIQUE关键字，用以保证其唯一性
 		// 所以这里不需要检查是否已有该车数据。直接插入数据即可，如有则会出错。
 
 		ContentValues cv = new ContentValues ();
 
-		cv.put(COLUMN_VEHICLE_TYPE, vd.type);
+		cv.put(COLUMN_VEHICLE_TYPE, vd.vehicleType);
 		cv.put(COLUMN_LICENSE_NUMBER, vd.licenseNumber);
-		cv.put(COLUMN_ENGINE_ID, vd.engineId);
+		cv.put(COLUMN_ENGINE_NUMBER, vd.engineNumber);
 		
 		dbOpen ();
 		db.insert(TABLE_VEHICLE_INFO, null, cv);
@@ -283,7 +270,9 @@ public class VehicleCache {
 		// 在索引表中插入车辆违章数据库日期记录
 		ContentValues cv = new ContentValues ();
 		cv.put(COLUMN_DATABASE_UPDATE_DATE, Utility.Date2Str(currDatabaseDate, "yyyy-MM-dd"));
+		cv.put(COLUMN_VEHICLE_TYPE, vm.getVehicleType());
 		cv.put(COLUMN_LICENSE_NUMBER, vm.getLicenseNumber());
+		cv.put(COLUMN_ENGINE_NUMBER, vm.getEngineNumber());
 		db.insert(TABLE_VIOLATION_INDEX, null, cv);
 		
 		// 在违章数据表中插入车辆违章数据记录
@@ -296,7 +285,7 @@ public class VehicleCache {
 			cv.put(COLUMN_LICENSE_NUMBER, vd.licenseNumber);			
 			cv.put(COLUMN_VIOLATION_DATE, vd.violationDateStr);
 			cv.put(COLUMN_ILLEGAL_LOCATIONS, vd.illegalLocations);
-			cv.put(COLUMN_UNLAWFUL_ACTION, vd.trafficViolations);
+			cv.put(COLUMN_UNLAWFUL_ACTION, vd.unlawfulAction);
 			cv.put(COLUMN_PUNISHMENT_RESULT, vd.punishmentResults);
 			cv.put(COLUMN_COMMENT, vd.comment);
 			db.insert(TABLE_VIOLATION_DATA, null, cv);
@@ -312,14 +301,43 @@ public class VehicleCache {
 			cv.put(COLUMN_TICKET_NUMBER, vd.ticketNumber);
 			cv.put(COLUMN_VIOLATION_DATE, vd.violationDateStr);
 			cv.put(COLUMN_FINES, vd.fines);
-			cv.put(COLUMN_UNLAWFUL_ACTION, vd.trafficViolations);
+			cv.put(COLUMN_UNLAWFUL_ACTION, vd.unlawfulAction);
 			cv.put(COLUMN_ILLEGAL_LOCATIONS, vd.illegalLocations);			
 			db.insert(TABLE_VIOLATION_DATA, null, cv);
 		}
 
 		dbClose ();		
 	}
-	
+
+	// 检查指定车辆违章信息是否存在缓存中
+	// 返回结果：
+	// -1 : 不存在该车辆信息
+	// 0  : 存在该车辆信息，但车辆除了牌照之外，发动机号或车辆类型不符
+	// 1  : 存在与该车辆完全一致的信息数据
+	public int checkViolationCache (ViolationManager.VehicleData vd) {
+		int result = -1;
+		dbOpen ();
+		
+		Cursor c = db.query(TABLE_VIOLATION_INDEX, null,
+				COLUMN_LICENSE_NUMBER + "=?",
+				new String[]{vd.licenseNumber}, 
+				null, null, null);
+
+		// 查询到车辆信息
+		if (c.moveToFirst()) {
+			result = vd.isSomeVehicle(new ViolationManager.VehicleData(
+					c.getString(c.getColumnIndexOrThrow(COLUMN_VEHICLE_TYPE)),
+					c.getString(c.getColumnIndexOrThrow(COLUMN_LICENSE_NUMBER)),
+					c.getString(c.getColumnIndexOrThrow(COLUMN_ENGINE_NUMBER))
+					)
+			) ? 1 : 0;
+		}
+				
+		dbClose ();
+		
+		return result;
+	}
+
 	// 查询指定车辆违章数据在缓存中的更新日期
 	// 如无车辆信息，则返回null
 	public Date queryViolationDatabaseDate (String licenseNumber) {
@@ -344,9 +362,9 @@ public class VehicleCache {
 	}
 
 	// 获取指定车辆的违章信息
-	public ViolationManager queryViolationData (String licenseNumber, Date currDatebaseDate) {
+	public ViolationManager queryViolationData (ViolationManager.VehicleData vd, Date currDatebaseDate) {
 		// 查询索引记录表，是否存在指定车辆的违章信息
-		Date updateDate = queryViolationDatabaseDate (licenseNumber);
+		Date updateDate = queryViolationDatabaseDate (vd.licenseNumber);
 		
 		ViolationManager vManager = null;
 		
@@ -356,10 +374,10 @@ public class VehicleCache {
 			// 开始查询该车辆所有违章数据信息
 			Cursor cursor= db.query(TABLE_VIOLATION_DATA, null,
 								COLUMN_LICENSE_NUMBER + "=?", 
-								new String[]{licenseNumber}, 
+								new String[]{vd.licenseNumber}, 
 								null, null, null);
-			
-			vManager = new ViolationManager (licenseNumber);
+
+			vManager = new ViolationManager (vd);
 			
 			// 将该车辆的违章信息放到 ViolatioManager中
 			if (cursor.moveToFirst()) {

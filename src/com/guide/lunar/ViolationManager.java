@@ -9,9 +9,42 @@ public class ViolationManager {
 
     public static final int LOCAL    = 1;
     public static final int NONLOCAL = 2;
-    
-    private String licenseNumber;
 
+	// 违章车辆相关管信息
+	public static class VehicleData {
+		// 车辆类型
+		public String vehicleType;
+		// 车牌号码
+		public String licenseNumber;
+		// 发动机号
+		public String engineNumber;
+		
+		public VehicleData (String type, String licenseNumber, String engineNumber) {
+			this.vehicleType = type;
+			this.licenseNumber = licenseNumber;
+			this.engineNumber = engineNumber;
+		}
+
+		public boolean isSomeVehicle (VehicleData vd) {
+	    	return isSomeLicenseNumber (vd.licenseNumber)
+	    			&& isSomeEngineNumber (vd.engineNumber)
+	    			&& isSomeVehicleType (vd.vehicleType);
+	    }
+
+	    public boolean isSomeLicenseNumber (String licenseNumber) {
+	    	return this.licenseNumber.equalsIgnoreCase(licenseNumber);
+	    }
+	    
+	    public boolean isSomeEngineNumber (String engineNumber) {
+	    	return this.engineNumber.equalsIgnoreCase(engineNumber);
+	    }
+	    
+	    public boolean isSomeVehicleType (String type) {
+	    	return this.vehicleType.equalsIgnoreCase(type);
+	    }
+	}
+
+	// 违章数据
     public class ViolationData {
 
         // 罚单类型(本地，异地/现场)
@@ -33,14 +66,14 @@ public class ViolationManager {
         public String ticketNumber;
 
         // 违章时间
-        public Date violationDate;
+        //public Date violationDate;
         public String violationDateStr;
 
         // 罚款金额
         public int fines;
 
         // 违法行为
-        public String trafficViolations;
+        public String unlawfulAction;
 
         // 违法地点
         public String illegalLocations;
@@ -66,7 +99,7 @@ public class ViolationManager {
                 licenseNumber = s2;
                 violationDateStr = s3;
                 illegalLocations = s4;
-                trafficViolations = s5;
+                unlawfulAction = s5;
                 punishmentResults = s6;
                 comment = s7;
             } else if (NONLOCAL == vType) {
@@ -79,7 +112,7 @@ public class ViolationManager {
                 } catch (java.lang.NumberFormatException e) {
                     fines = 0;
                 }
-                trafficViolations = s6;
+                unlawfulAction = s6;
                 illegalLocations = s7;
             }
             return this;
@@ -116,21 +149,42 @@ public class ViolationManager {
     		return vioDataList;
     	}
     }
-    
-    public ViolationDataList vLocalList = new ViolationDataList (LOCAL);
-    public ViolationDataList vNonlocalList = new ViolationDataList (NONLOCAL);
+
+    private VehicleData vehicleData = null;
+    private ViolationDataList vLocalList = new ViolationDataList (LOCAL);
+    private ViolationDataList vNonlocalList = new ViolationDataList (NONLOCAL);
 
 
-    public ViolationManager (String licenseNumber) {
-    	this.licenseNumber = licenseNumber;
+    public ViolationManager (VehicleData vd) {
+    	this.vehicleData = vd;
     }
     
     public final String getLicenseNumber () {
-    	return licenseNumber;
+    	return vehicleData.licenseNumber;
+    }
+    
+    public final String getVehicleType () {
+    	return vehicleData.vehicleType;
+    }
+    
+    public final String getEngineNumber () {
+    	return vehicleData.engineNumber;
     }
 
     public boolean isSomeLicenseNumber (String licenseNumber) {
-    	return this.licenseNumber.equalsIgnoreCase(licenseNumber);
+    	return vehicleData.isSomeLicenseNumber(licenseNumber);
+    }
+    
+    public boolean isSomeEngineNumber (String engineNumber) {
+    	return vehicleData.isSomeEngineNumber(engineNumber);
+    }
+    
+    public boolean isSomeVehicleType (String type) {
+    	return vehicleData.isSomeVehicleType(type);
+    }
+
+    public boolean isSomeVehicle (VehicleData vd) {
+    	return vehicleData.isSomeVehicle(vd);
     }
 
     public ViolationData newData (int vType) {
