@@ -55,9 +55,10 @@ public class LunarActivity extends Activity {
     private Date mDatabaseUpdateDate = null;
     
     private String[] mVehicleTypeArray = null;
-    private String mVehicleType = "02";
-    private String mLicenseNumber = "";
-    private String mEngineNumber = "";
+    private ViolationManager.VehicleData mVehicleData = new ViolationManager.VehicleData("02", "", "");
+//    private String mVehicleType = "02";
+//    private String mLicenseNumber = "";
+//    private String mEngineNumber = "";
 
     private void initComponents ()
     {
@@ -94,7 +95,7 @@ public class LunarActivity extends Activity {
             public void onItemSelected(AdapterView<?> arg0, View arg1,  
                     int arg2, long arg3) {
             	
-            	mVehicleType = mVehicleTypeArray[arg2];
+            	mVehicleData.vehicleType = mVehicleTypeArray[arg2];
                 //arg0.setVisibility(View.VISIBLE);  
             }  
 
@@ -124,7 +125,7 @@ public class LunarActivity extends Activity {
             //@Override
 			public void afterTextChanged(Editable s) {
 				// TODO Auto-generated method stub
-				mLicenseNumber = s.toString();
+				mVehicleData.licenseNumber = s.toString();
 			}  
         });
         
@@ -141,7 +142,7 @@ public class LunarActivity extends Activity {
             //@Override
 			public void afterTextChanged(Editable s) {
 				// TODO Auto-generated method stub
-				mEngineNumber = s.toString();
+				mVehicleData.engineNumber = s.toString();
 			}  
         });
         
@@ -176,21 +177,21 @@ public class LunarActivity extends Activity {
     	if (fromCache) { // 首先从缓存中获取违章数据
     		VehicleCache vc = new VehicleCache (this);
     		
-    		int isExists = vc.checkViolationCache (new ViolationManager.VehicleData(mVehicleType, mLicenseNumber, mEngineNumber));
+    		int isExists = vc.checkViolationCache (mVehicleData);
 
     		if (isExists == 0) { // 车辆的发动机号或者车辆类型错误
     			Toast.makeText(LunarActivity.this, "车辆数据错误。请检查车牌号与发动机号是否正确。注意 字母O,I,L等与数字0,1的区别。", Toast.LENGTH_SHORT).show();
     			return;
     		} else if (isExists == 1) { // 该车辆信息存在，直接从缓存里取违章信息
 	    		// 查询数据库缓存中保存的违章记录日期
-	    		Date databaseDate = vc.queryViolationDatabaseDate(mLicenseNumber);
+	    		Date databaseDate = vc.queryViolationDatabaseDate(mVehicleData.licenseNumber);
 	
 	    		// 如果数据库日期信息相等，则直接读缓存中的违章数据
 	    		if ((mDatabaseUpdateDate == null) // 如果当前网站上的数据库更新日期未知（因为这代表着可能是网络故障）则直接读取缓存
 	    			// 否则检查网站更新日期与本地缓存中的日期是否相等，相等则读取缓存
 	    			|| (databaseDate != null && mDatabaseUpdateDate != null && !mDatabaseUpdateDate.after(databaseDate))) {
 
-	    			ViolationManager vm = vc.queryViolationData(new ViolationManager.VehicleData(mVehicleType, mLicenseNumber, mEngineNumber));
+	    			ViolationManager vm = vc.queryViolationData(mVehicleData);
 	    			
 	    			if (null != vm) { // 如果吃哦你缓存中读取成功则显示他们
 		    			((MainApp)getApplication ()).setViolationManager(vm);
@@ -224,16 +225,16 @@ public class LunarActivity extends Activity {
         }
     };
     
-    private boolean queryDataLegal (String carType, String carId, String carEngineId) {
-    	if (carId.length() != 7) {
+    private boolean queryDataLegal (ViolationManager.VehicleData vd) {
+    	if (vd.licenseNumber.length() != 7) {
     		Toast.makeText(LunarActivity.this, "车牌号不正确", Toast.LENGTH_SHORT).show();
     		return false;
-    	} else if (!carId.toLowerCase().startsWith("苏c")) {
+    	} else if (!vd.licenseNumber.toLowerCase().startsWith("苏c")) {
 			Toast.makeText(LunarActivity.this, "车牌号需为徐州牌照", Toast.LENGTH_SHORT).show();
 			return false;
 		}
 
-    	if (carEngineId.length() != 6) {
+    	if (vd.engineNumber.length() != 6) {
     		Toast.makeText(LunarActivity.this, "发动机号不正确", Toast.LENGTH_SHORT).show();
     		return false;  	  	
   	  	}
@@ -246,57 +247,6 @@ public class LunarActivity extends Activity {
           public void onClick(View v)
           {
         	  queryViolationData (true);
-
-//        	  int carTypeSelectedPos = spinner_CarTypeList.getSelectedItemPosition();
-//        	  String[] carTypeArray = getResources ().getStringArray(R.array.carTypeValueList);
-//        	  
-//        	  String carType = carTypeArray[carTypeSelectedPos];
-//        	  String carId   = actvCarId.getText().toString();
-//        	  String carEngineId = actvCarEngineId.getText().toString();
-//        	  
-//        	  // 车辆信息不正确则返回
-//        	  if (!queryDataLegal (carType, carId, carEngineId)) {
-//        	  	return;
-//        	  }
-//
-//        	  ProgressDialog progressDialog = ProgressDialog.show(LunarActivity.this, "获取违章信息", "请稍等...", true);
-//        	  
-        	  //ProgressDialog progressDialog = new ProgressDialog 
-
-//        	  new Thread(new Runnable() {  
-//                  public void run() {  
-//                      try {  
-//                    	  Thread.sleep(13000);
-//                          // ---simulate doing something lengthy---  
-//                    	  //final ViolationResult vResult = ViolationAcquirer.getBreaksRule(carType, carId, carEngineId);  
-//                          // ---dismiss the dialog---  
-//                          //progressDialog.dismiss();  
-//                      //} catch (java.lang.InterruptedException e) {
-//                      } catch (Exception e) {
-//                          e.printStackTrace();  
-//                      }  
-//                  }  
-//              }).start();
-  
-//        	  ViolationAcquirer va = new ViolationAcquirer ();
-//        	  ViolationResult vResult = va.getBreaksRule(carType, carId, carEngineId);
-
-//        	  if (progressDialog != null && progressDialog.isShowing()) {
-//                  progressDialog.dismiss();
-//              }
-        	  //((MainApp)getApplication ()).setViolationResult(vResult);
-              //Switch to report page
-              //Intent intent = new Intent();
-              
-              //DataExchanger d = new DataExchanger ();
-              //d.datamap.put("v", va);
-              //d.datamap = new HashMap<String, Object>();
-              //d.datamap.put("v", vResult);
-              //d.datamap.put("v", new ViolationData (1));
-              //d.count = 11;
-              //intent.putExtra ("key", d);
-              //intent.setClass(LunarActivity.this, ViolationActivity.class);
-              //startActivity(intent);
            }
      };
      
@@ -354,9 +304,6 @@ public class LunarActivity extends Activity {
      // 获取违章信息
      class GetViolationTask extends AsyncTask<Void, Integer, ViolationResult> {
     	 ProgressDialog progressDialog = null;
-//    	 String carType = null;
-//    	 String carEngineId = null;
-//    	 String carId = null;
 
     	 @Override  
          protected ViolationResult doInBackground(Void...params) { //处理后台执行的任务，在后台线程执行  
@@ -366,7 +313,7 @@ public class LunarActivity extends Activity {
     		 if (progressDialog == null) return null;
      	  
     		 ViolationAcquirer va = new ViolationAcquirer ();
-       	  	 ViolationResult vResult = va.getBreaksRule(new ViolationManager.VehicleData (mVehicleType, mLicenseNumber, mEngineNumber));
+       	  	 ViolationResult vResult = va.getBreaksRule(mVehicleData);
     		 
     		 //publishProgress (100);
 
@@ -393,7 +340,7 @@ public class LunarActivity extends Activity {
        	  			Toast.makeText(LunarActivity.this, "车辆数据错误。请检查车牌号与发动机号是否正确。注意 字母O,I,L等与数字0,1的区别。", Toast.LENGTH_SHORT).show();
        	  		} else {
        	  			VehicleCache vc = new VehicleCache (LunarActivity.this);
-       	  			vc.addVehicleInfo(new ViolationManager.VehicleData(mVehicleType, mLicenseNumber, mEngineNumber));
+       	  			vc.addVehicleInfo(mVehicleData);
        	  			vc.addViolationData (mDatabaseUpdateDate, vr.violationManager());
 
 		       	  	((MainApp)getApplication ()).setViolationManager(vr.violationManager());
@@ -406,19 +353,8 @@ public class LunarActivity extends Activity {
 
     	 @Override
           protected void onPreExecute () {//在 doInBackground(Params...)之前被调用，在ui线程执行  
-              //mImageView.setImageBitmap(null);  
-              //mProgressBar.setProgress(0);//进度条复位  
-    		 //showUpdateDateProgressBar (true);
-
-//    		  int carTypeSelectedPos = spinner_CarTypeList.getSelectedItemPosition();
-//           	  String[] carTypeArray = getResources ().getStringArray(R.array.carTypeValueList);
-//           	  
-//           	  carType = carTypeArray[carTypeSelectedPos];
-//           	  carId   = actvCarId.getText().toString();
-//           	  carEngineId = actvCarEngineId.getText().toString();
-           	  
            	  // 车辆信息不正确则返回
-           	  if (!queryDataLegal (mVehicleType, mLicenseNumber, mEngineNumber)) {
+           	  if (!queryDataLegal (mVehicleData)) {
            	  	return;
            	  }
     		 progressDialog = ProgressDialog.show(LunarActivity.this, "获取违章信息", "请稍等...", true, true);
