@@ -89,8 +89,10 @@ public class VehicleCache {
 									",[licenseNumber] text UNIQUE NOT NULL COLLATE NOCASE" +
 									",[engineNumber] text NOT NULL COLLATE NOCASE" +
 									",[databaseUpdateDate] text NOT NULL COLLATE NOCASE" +
+									",[%s] text NOT NULL COLLATE NOCASE" +
 									");",
-									TABLE_VIOLATION_INDEX),
+									TABLE_VIOLATION_INDEX,
+									COLUMN_QUERY_DATABASE_DATE),
 
 					String.format("CREATE TABLE \"%s\" (" + 
 									"[id] integer PRIMARY KEY AUTOINCREMENT UNIQUE NOT NULL" +
@@ -366,7 +368,7 @@ public class VehicleCache {
 		
 		// 删除之前的车辆违章记录
 		deleteViolationCache (vm.getLicenseNumber());
-		
+
 		dbOpen ();
 
 		// 在索引表中插入车辆违章数据库日期记录
@@ -375,6 +377,7 @@ public class VehicleCache {
 		cv.put(COLUMN_VEHICLE_TYPE, vm.getVehicleType());
 		cv.put(COLUMN_LICENSE_NUMBER, vm.getLicenseNumber());
 		cv.put(COLUMN_ENGINE_NUMBER, vm.getEngineNumber());
+		cv.put(COLUMN_QUERY_DATABASE_DATE, Utility.Date2Str(new Date (), RemoteDatabaseInfo.queryDateFormat)); // 查询网站违章数据库的时间
 		db.insert(TABLE_VIOLATION_INDEX, null, cv);
 		
 		// 在违章数据表中插入车辆违章数据记录
@@ -440,7 +443,7 @@ public class VehicleCache {
 		return result;
 	}
 
-	// 查询指定车辆违章数据在缓存中的更新日期
+	// 查询缓存中指定车辆违章数据的更新日期
 	// 如无车辆信息，则返回null
 	public Date queryViolationDatabaseDate (String licenseNumber) {
 		dbOpen ();
