@@ -355,7 +355,7 @@ public class LunarActivity extends Activity {
      // 获取违章信息
      class GetViolationTask extends AsyncTask<Void, Integer, ViolationResult> {
     	 ProgressDialog progressDialog = null;
-    	 boolean mIsCanceled = false;
+    	 int mIsCanceled = 0; // 三种状态：0正常 1取消 2车牌数据不正确 
 
     	 @Override  
          protected ViolationResult doInBackground(Void...params) { //处理后台执行的任务，在后台线程执行  
@@ -384,9 +384,11 @@ public class LunarActivity extends Activity {
        	  	if (progressDialog != null && progressDialog.isShowing()) {
               progressDialog.dismiss();
        	  	}
-       	  	
-       	  	//如果用户按了返回按钮则直接返回
-       	  	if (mIsCanceled) {
+
+
+       	  	if (mIsCanceled == 2){
+       	  		return;
+       	  	} else if (mIsCanceled == 1) {
        	  		// 这里加入当用户按返回按钮后，如果网络返回的结果正确的话，将其违章数据存入数据库缓存中，方便下次直接取用
        	  		if (vr!=null && vr.getErrorType() == ViolationResult.ERROR_OK) {
        	  			new UpdateViolatioinCache ().write(vr.violationManager());
@@ -417,7 +419,8 @@ public class LunarActivity extends Activity {
           protected void onPreExecute () {//在 doInBackground(Params...)之前被调用，在ui线程执行  
            	  // 车辆信息不正确则返回
            	  if (!queryDataLegal (mVehicleData)) {
-           	  	return;
+           		  mIsCanceled = 2; //标记为车辆数据不正确
+           		  return;
            	  }
     		 progressDialog = ProgressDialog.show(LunarActivity.this, 
     				 "获取违章信息", "请稍等...",
@@ -425,7 +428,7 @@ public class LunarActivity extends Activity {
     				 true,
     				 new DialogInterface.OnCancelListener () {
     			 		public void onCancel(DialogInterface dialog) {
-    			 			mIsCanceled = true;
+    			 			mIsCanceled = 1; // 标记为用户取消
     			 		}
     		 	});
           }  

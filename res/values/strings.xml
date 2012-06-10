@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-
-    <string name="hello">Hello World, LunarActivity!</string>
     <string name="app_name">徐州机动车违章查询</string>
+    <string name="breakrules_title">违章信息</string>
     <string name="txtView_DatabaseLabel">数据库日期</string>
     <string name="txtView_DatabaseDate">0000&#8211;00&#8211;00</string>
     <string name="txtView_CarIDLabel">车牌号码</string>
