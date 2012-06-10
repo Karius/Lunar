@@ -14,7 +14,49 @@ import java.util.Date;
 import java.text.ParseException;
 
 public class Utility {
+
+	// 计算两个日期之间的分钟数
+	static public long getMinuteBetween (Date d1, Date d2) {
+		
+		int r = d1.compareTo(d2);
+		long from;
+		long to;
+		
+		if (0 == r){
+			return 0;
+		}
+		else if (r < 0) {
+			from = d1.getTime();
+			to = d2.getTime();
+		} else {
+			from = d2.getTime();
+			to = d1.getTime();
+		}
+		
+		return (to - from) / (1000 * 60);
+	}
 	
+	// 计算两个日期之间的天数
+	static public long getDayBetween (Date d1, Date d2) {
+		
+		int r = d1.compareTo(d2);
+		long from;
+		long to;
+		
+		if (0 == r){
+			return 0;
+		}
+		else if (r < 0) {
+			from = d1.getTime();
+			to = d2.getTime();
+		} else {
+			from = d2.getTime();
+			to = d1.getTime();
+		}
+		
+		return (to - from) / (1000 * 60 * 60 * 24);
+	}
+
 	// "yyyy-MM-dd"
 	static public Date Str2Date (String s, String fmt) {
 		try {

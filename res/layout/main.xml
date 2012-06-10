@@ -72,6 +72,7 @@
 	            android:background="@drawable/selector_comm_edittext_bg"
 	            android:ems="10"
 	            android:hint="@string/txtView_CarIDLabel"
+	            android:imeOptions="actionNext"
 	            android:maxLength="7"
 	            android:singleLine="true"
 	            android:text="@string/tvCarIDXZ" >
@@ -91,6 +92,7 @@
 	            android:hint="@string/txtView_CarEngieID"
 	            android:background="@drawable/selector_comm_edittext_bg"
 	            android:digits="1234567890abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
+	            android:imeOptions="actionDone"
 	            android:ems="10"
 	            android:maxLength="6"
 	            android:singleLine="true" />

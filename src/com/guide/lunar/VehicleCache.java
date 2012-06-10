@@ -15,11 +15,15 @@ public class VehicleCache {
 	public final static int		DATABASE_VERSION = 1;
 	public final static String	DATABASE_NAME = "DataCache.db";
 	
+	public final static String  TABLE_DATABASE_INFO = "ViolationDatabaseInfo"; // 网站上的违章数据库的相关信息，主要是更新日期
 	public final static String	TABLE_VEHICLE_INFO = "VehicleInfo"; // 存放汽车牌号、发动机号的历史信息表
 	public final static String	TABLE_VIOLATION_INDEX = "ViolationIndex"; // 违章信息索引表
 	public final static String	TABLE_VIOLATION_DATA = "ViolationCache"; // 存放违章信息缓存数据表
 	
 	// 列名
+	// 获取网站数据库更新日期时的具体日期
+	public final static String COLUMN_QUERY_DATABASE_DATE = "databaseQueryDate";
+
 	//数据库更新日期
 	public final static String COLUMN_DATABASE_UPDATE_DATE = "databaseUpdateDate";
 	//是否本地违章
@@ -61,42 +65,51 @@ public class VehicleCache {
 		@Override
 		public void onCreate(SQLiteDatabase db) {
 			// TODO Auto-generated method stub
-			String sqlStr = String.format("CREATE TABLE \"%s\"(" +
-											"[id] integer PRIMARY KEY AUTOINCREMENT UNIQUE NOT NULL" +
-											",[vehicleType] text NOT NULL COLLATE NOCASE" +
-											",[licenseNumber] text NOT NULL UNIQUE COLLATE NOCASE" +
-											",[engineNumber] text NOT NULL COLLATE NOCASE" +
-											");",
-											TABLE_VEHICLE_INFO);
-			db.execSQL(sqlStr);
+			String sqlStr[] = new String []{
+					String.format("CREATE TABLE \"%s\"(" +
+									"[id] integer PRIMARY KEY AUTOINCREMENT UNIQUE NOT NULL" +
+									",[%s] text NOT NULL COLLATE NOCASE" +
+									",[%s] text NOT NULL COLLATE NOCASE" +
+									");",
+									TABLE_DATABASE_INFO,
+									COLUMN_QUERY_DATABASE_DATE,
+									COLUMN_DATABASE_UPDATE_DATE),
+					
+					String.format("CREATE TABLE \"%s\"(" +
+									"[id] integer PRIMARY KEY AUTOINCREMENT UNIQUE NOT NULL" +
+									",[vehicleType] text NOT NULL COLLATE NOCASE" +
+									",[licenseNumber] text NOT NULL UNIQUE COLLATE NOCASE" +
+									",[engineNumber] text NOT NULL COLLATE NOCASE" +
+									");",
+									TABLE_VEHICLE_INFO),
 
-			sqlStr = String.format(
-											"CREATE TABLE \"%s\" (" + 
-											"[id] integer PRIMARY KEY AUTOINCREMENT UNIQUE NOT NULL" +
-											",[vehicleType] text NOT NULL COLLATE NOCASE" +
-											",[licenseNumber] text UNIQUE NOT NULL COLLATE NOCASE" +
-											",[engineNumber] text NOT NULL COLLATE NOCASE" +
-											",[databaseUpdateDate] text NOT NULL COLLATE NOCASE" +
-											");",
-											TABLE_VIOLATION_INDEX);
-			db.execSQL(sqlStr);
+					String.format("CREATE TABLE \"%s\" (" + 
+									"[id] integer PRIMARY KEY AUTOINCREMENT UNIQUE NOT NULL" +
+									",[vehicleType] text NOT NULL COLLATE NOCASE" +
+									",[licenseNumber] text UNIQUE NOT NULL COLLATE NOCASE" +
+									",[engineNumber] text NOT NULL COLLATE NOCASE" +
+									",[databaseUpdateDate] text NOT NULL COLLATE NOCASE" +
+									");",
+									TABLE_VIOLATION_INDEX),
 
-			sqlStr = String.format(
-											"CREATE TABLE \"%s\" (" + 
-											"[id] integer PRIMARY KEY AUTOINCREMENT UNIQUE NOT NULL" +
-											",[isNonlocal] integer" +
-											",[vehicleType] text COLLATE NOCASE" + 
-											",[licenseNumber] text NOT NULL COLLATE NOCASE" + 
-											",[ticketNumber] text COLLATE NOCASE" + 
-											",[violationDate] text COLLATE NOCASE" + 
-											",[fines] integer" + 
-											",[unlawfulAction] text COLLATE NOCASE" + 
-											",[illegalLocations] text COLLATE NOCASE" + 
-											",[punishmentResults] text COLLATE NOCASE" + 
-											",[comment] text COLLATE NOCASE" + 
-											");",
-											TABLE_VIOLATION_DATA);		
-			db.execSQL(sqlStr);
+					String.format("CREATE TABLE \"%s\" (" + 
+									"[id] integer PRIMARY KEY AUTOINCREMENT UNIQUE NOT NULL" +
+									",[isNonlocal] integer" +
+									",[vehicleType] text COLLATE NOCASE" + 
+									",[licenseNumber] text NOT NULL COLLATE NOCASE" + 
+									",[ticketNumber] text COLLATE NOCASE" + 
+									",[violationDate] text COLLATE NOCASE" + 
+									",[fines] integer" + 
+									",[unlawfulAction] text COLLATE NOCASE" + 
+									",[illegalLocations] text COLLATE NOCASE" + 
+									",[punishmentResults] text COLLATE NOCASE" + 
+									",[comment] text COLLATE NOCASE" + 
+									");",
+									TABLE_VIOLATION_DATA)
+			};
+			
+			for(int i=0;i<sqlStr.length;i++)
+				db.execSQL(sqlStr[i]);
 		}
 
 		@Override
@@ -134,7 +147,96 @@ public class VehicleCache {
 		return (dbIsOpen()) ? db.isReadOnly() : true;
 	}
 
+	// 操作数据库更新日期信息
+	public static class RemoteDatabaseInfo {
+		public Date databaseDate = null;
+		public Date queryDate = null;
 
+		public final static String queryDateFormat = "yyyy-MM-dd HH:mm:ss";
+		public final static String databaseDateFormat = "yyyy-MM-dd";
+	}
+
+	
+	// 删除网站数据库信息
+	private void clearRemoteDatabaseInfo () {
+		dbOpen ();
+		db.delete(TABLE_DATABASE_INFO, null, null);		
+		dbClose ();
+	}
+
+	// 写入网站数据库信息
+	public void writeRemoteDatabaseInfo (Date databaseUpdateDate) {
+		
+		// 首先删除旧数据
+		clearRemoteDatabaseInfo ();
+
+		dbOpen ();
+		
+		ContentValues cv = new ContentValues ();
+		
+		cv.put(COLUMN_QUERY_DATABASE_DATE, Utility.Date2Str(new Date (), RemoteDatabaseInfo.queryDateFormat));
+		cv.put(COLUMN_DATABASE_UPDATE_DATE, Utility.Date2Str(databaseUpdateDate, RemoteDatabaseInfo.databaseDateFormat));
+		db.insert(TABLE_DATABASE_INFO, null, cv);
+		
+		dbClose ();
+	}
+
+	// 读取网站数据库信息
+	public RemoteDatabaseInfo readRemoteDatabaseInfo () {
+		dbOpen ();
+		
+		RemoteDatabaseInfo rdi = null;
+		
+		Cursor c = db.query (TABLE_DATABASE_INFO,
+							null,
+							null,
+							null,
+							null,null,
+							null);
+		
+		if (c.moveToFirst()) {
+			rdi = new RemoteDatabaseInfo ();
+			rdi.queryDate = Utility.Str2Date(
+									c.getString(c.getColumnIndexOrThrow(COLUMN_QUERY_DATABASE_DATE)), 
+									RemoteDatabaseInfo.queryDateFormat);
+			rdi.databaseDate = Utility.Str2Date(
+									c.getString(c.getColumnIndexOrThrow(COLUMN_DATABASE_UPDATE_DATE)),
+									RemoteDatabaseInfo.databaseDateFormat);
+			
+			if (null == rdi.queryDate || null == rdi.databaseDate) {
+				rdi = null;
+			}
+		}
+		
+		dbClose ();
+		
+		return rdi;
+	}
+	
+	// 根据数据库表中的相关信息来猜测获取网站数据库更新日期
+	public String getDatabaseUpdateDate () {
+		// 从数据库缓存中读取违章数据库更新日期
+		RemoteDatabaseInfo rdi = readRemoteDatabaseInfo ();
+		
+		// 数据库中无记录则返回null，表示需要从网站更新违章数据库信息
+		if (null == rdi) {
+			return null;
+		}
+		
+		Date currDate = new Date ();
+
+		long days = Utility.getDayBetween(rdi.databaseDate, currDate);
+		long minutes = Utility.getMinuteBetween(rdi.queryDate, currDate);
+		
+		// 为同一天，或者小于两天，则不需从网站更新日期信息，直接 使用数据库缓存中的日期信息
+		if ((days <= 1) 
+			|| (days >= 2 && minutes < 60)) {
+			return Utility.Date2Str(rdi.databaseDate, RemoteDatabaseInfo.databaseDateFormat);			
+		}
+		return null;
+	}
+
+	/////////////////////////////////////////////////////////////////////////////////
 	// 获取所有车辆数据
 	public List<ViolationManager.VehicleData> queryAllVehicleInfo () {
 		List<ViolationManager.VehicleData> l = new ArrayList<ViolationManager.VehicleData> ();

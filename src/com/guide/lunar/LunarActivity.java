@@ -43,9 +43,14 @@ public class LunarActivity extends Activity {
         initComponents ();
         setListeners ();
         
+        // 尝试从数据库缓存中更新违章数据库日期
+        boolean isOk = updateDatabaseDateFromCache ();
+
         if (checkNetwork ()) {
-        	updateDatabaseDate ();
-        }
+        	if (!isOk) {
+	        	updateDatabaseDate ();
+        	}
+	    }
     }
     
     private ImageButton btn_history;
@@ -163,6 +168,17 @@ public class LunarActivity extends Activity {
    	 vt.vibrate(500);    	 
     }
 
+    private boolean updateDatabaseDateFromCache () {
+    	// 是否允许首先从数据库缓存中读取更新日期
+    	VehicleCache vc = new VehicleCache (LunarActivity.this);
+    	String updateDate = vc.getDatabaseUpdateDate();
+    	if (updateDate != null) {
+    		mDatabaseUpdateDate = Utility.Str2Date (updateDate, "yyyy-MM-dd");
+    		tvDatabaseDate.setText(updateDate);
+    		return true;
+    	}
+    	return false;
+    }
     private void updateDatabaseDate () {
     	DatabaseDateUpdateTask ddut = new DatabaseDateUpdateTask ();
         ddut.execute();
@@ -172,9 +188,9 @@ public class LunarActivity extends Activity {
         int netState = Utility.checkNetworkAvailable(this);
 
         if (0 == netState) {
-        	Utility.showAlertDialog(this, "网络状态", "当前网络不可用，是否进入设置", "设置", "继续", wifiSetListener, cancelListener);
+        	Utility.showAlertDialog(this, "网络状态", "当前网络不可用，是否进入设置", "设置", "继续", wifiSetListener, continueListener);
         } else if (2 == netState) {
-        	Utility.showAlertDialog(this, "网络状态", "当前网络非 WIFI，可能会占用你的流量，是否打开WIFI", "设置", "继续", wifiSetListener, cancelListener);
+        	Utility.showAlertDialog(this, "网络状态", "当前网络非 WIFI，可能会占用你的流量，是否打开WIFI", "设置", "继续", wifiSetListener, continueListener);
         } else {
         	return true;
         }
@@ -226,11 +242,16 @@ public class LunarActivity extends Activity {
         }
     };
 
-    private DialogInterface.OnClickListener cancelListener = new DialogInterface.OnClickListener() {
+    private DialogInterface.OnClickListener continueListener = new DialogInterface.OnClickListener() {
         // @Override
         public void onClick (DialogInterface dialog, int which) {
+        	// 关闭继续
             dialog.cancel();
-            updateDatabaseDate ();
+
+            // 首先从缓存更新日期信息，失败则从网络更新
+            if (!updateDatabaseDateFromCache ()) {
+            	updateDatabaseDate ();
+            }
         }
     };
     
@@ -328,6 +349,10 @@ public class LunarActivity extends Activity {
     	 @Override
          protected void onPostExecute(Date updateDate) {//后台任务执行完之后被调用，在ui线程执行  
               if(updateDate != null) {
+            	  // 将违章数据库日期放入数据库缓存中，以备下次直接使用
+            	  VehicleCache vc = new VehicleCache (LunarActivity.this);
+            	  vc.writeRemoteDatabaseInfo(updateDate);
+            	  
             	  mDatabaseUpdateDate = updateDate;
             	  SimpleDateFormat sdf = new SimpleDateFormat ("yyyy-MM-dd");
             	  tvDatabaseDate.setText(sdf.format(updateDate));
@@ -422,6 +447,8 @@ public class LunarActivity extends Activity {
            		  mIsCanceled = 2; //标记为车辆数据不正确
            		  return;
            	  }
+           	  
+           	 // 显示等待提示
     		 progressDialog = ProgressDialog.show(LunarActivity.this, 
     				 "获取违章信息", "请稍等...",
     				 true,
