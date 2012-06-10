@@ -355,33 +355,46 @@ public class LunarActivity extends Activity {
      // 获取违章信息
      class GetViolationTask extends AsyncTask<Void, Integer, ViolationResult> {
     	 ProgressDialog progressDialog = null;
+    	 boolean mIsCanceled = false;
 
     	 @Override  
          protected ViolationResult doInBackground(Void...params) { //处理后台执行的任务，在后台线程执行  
-    		 
-    		 //publishProgress (0); //将会调用onProgressUpdate(Integer... progress)方法
-
-    		 if (progressDialog == null) return null;
+    		 //if (progressDialog == null) return null;
      	  
     		 ViolationAcquirer va = new ViolationAcquirer ();
        	  	 ViolationResult vResult = va.getBreaksRule(mVehicleData);
     		 
-    		 //publishProgress (100);
-
     		 return vResult;
     	 }
     	 
     	 @Override
     	 protected void onProgressUpdate(Integer... progress) {//在调用publishProgress之后被调用，在ui线程执行  
-             //mProgressBar.setProgress(progress[0]);//更新进度条的进度  
           }  
    
     	 @Override
          protected void onPostExecute(ViolationResult vr) {//后台任务执行完之后被调用，在ui线程执行  
+    		 
+    		  class UpdateViolatioinCache {    			 
+    			 public void write (ViolationManager vm) {
+    				VehicleCache vc = new VehicleCache (LunarActivity.this);
+        	  		vc.addVehicleInfo (mVehicleData);
+        	  		vc.addViolationData (mDatabaseUpdateDate, vm);
+    			 }    			 
+    		 }
        	  	if (progressDialog != null && progressDialog.isShowing()) {
               progressDialog.dismiss();
        	  	}
        	  	
+       	  	//如果用户按了返回按钮则直接返回
+       	  	if (mIsCanceled) {
+       	  		// 这里加入当用户按返回按钮后，如果网络返回的结果正确的话，将其违章数据存入数据库缓存中，方便下次直接取用
+       	  		if (vr!=null && vr.getErrorType() == ViolationResult.ERROR_OK) {
+       	  			new UpdateViolatioinCache ().write(vr.violationManager());
+       	  		}
+       	  		return;
+       	  	}
+
+       	  	// 否则继续显示违章数据
        	  	if (vr != null) {
        	  		if (vr.getErrorType() == ViolationResult.ERROR_PARSE) {
        	  			Toast.makeText(LunarActivity.this, "返回信息有错误", Toast.LENGTH_SHORT).show();
@@ -390,9 +403,7 @@ public class LunarActivity extends Activity {
        	  		} else if (vr.getErrorType() == ViolationResult.ERROR_DATA) {
        	  			Toast.makeText(LunarActivity.this, "车辆数据错误。请检查车牌号与发动机号是否正确。注意 字母O,I,L等与数字0,1的区别。", Toast.LENGTH_SHORT).show();
        	  		} else {
-       	  			VehicleCache vc = new VehicleCache (LunarActivity.this);
-       	  			vc.addVehicleInfo (mVehicleData);
-       	  			vc.addViolationData (mDatabaseUpdateDate, vr.violationManager());
+       	  			new UpdateViolatioinCache ().write(vr.violationManager());
 
 		       	  	((MainApp)getApplication ()).setViolationManager(vr.violationManager());
 		            Intent intent = new Intent();		
@@ -408,7 +419,15 @@ public class LunarActivity extends Activity {
            	  if (!queryDataLegal (mVehicleData)) {
            	  	return;
            	  }
-    		 progressDialog = ProgressDialog.show(LunarActivity.this, "获取违章信息", "请稍等...", true, true);
+    		 progressDialog = ProgressDialog.show(LunarActivity.this, 
+    				 "获取违章信息", "请稍等...",
+    				 true,
+    				 true,
+    				 new DialogInterface.OnCancelListener () {
+    			 		public void onCancel(DialogInterface dialog) {
+    			 			mIsCanceled = true;
+    			 		}
+    		 	});
           }  
 
     	 @Override
