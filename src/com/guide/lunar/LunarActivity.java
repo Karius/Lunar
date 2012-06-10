@@ -202,19 +202,24 @@ public class LunarActivity extends Activity {
     	if (fromCache) { // 首先从缓存中获取违章数据
     		VehicleCache vc = new VehicleCache (this);
     		
+    		// 检查缓存中是否有该车辆的数据记录
     		int isExists = vc.checkViolationCache (mVehicleData);
 
-    		if (isExists == 0) { // 车辆的发动机号或者车辆类型错误
+    		if (isExists == 0) { // 车辆的发动机号或者车辆类型输入错误
     			Toast.makeText(LunarActivity.this, "车辆数据错误。请检查车牌号与发动机号是否正确。注意 字母O,I,L等与数字0,1的区别。", Toast.LENGTH_SHORT).show();
     			return;
     		} else if (isExists == 1) { // 该车辆信息存在，直接从缓存里取违章信息
-	    		// 查询数据库缓存中保存的违章记录日期
+	    		// 查询缓存中的违章记录数据库日期，这个值可能会为 null
 	    		Date databaseDate = vc.queryViolationDatabaseDate(mVehicleData.licenseNumber);
+	    		// 上次联网查询该车辆时的时间
+	    		Date lastQueryDate = vc.queryViolationLastQueryDate(mVehicleData.licenseNumber);
 	
-	    		// 如果数据库日期信息相等，则直接读缓存中的违章数据
-	    		if ((mDatabaseUpdateDate == null) // 如果当前网站上的数据库更新日期未知（因为这代表着可能是网络故障）则直接读取缓存
-	    			// 否则检查网站更新日期与本地缓存中的日期是否相等，相等则读取缓存
-	    			|| (databaseDate != null && mDatabaseUpdateDate != null && !mDatabaseUpdateDate.after(databaseDate))) {
+	    		if (
+		    		// 检查网站更新日期与本地缓存中的日期是否相等，相等则读取缓存
+	    			(databaseDate != null && mDatabaseUpdateDate != null && !mDatabaseUpdateDate.after(databaseDate))
+	    			// 如果缓存中上次联网查询时的违章数据更新时间未知 或者 当前 违章数据库更新日期未知（因为这代表着可能是网络故障），同时此次查询距离上次查询时间不足一小时，则直接返回缓存中记录
+	    			|| ((databaseDate == null || mDatabaseUpdateDate == null) && Utility.getMinuteBetween(new Date (), lastQueryDate) <= 60)
+	    			) {
 
 	    			ViolationManager vm = vc.queryViolationData(mVehicleData);
 	    			
@@ -330,15 +335,11 @@ public class LunarActivity extends Activity {
     	 @Override  
          protected Date doInBackground(Void...params) { //处理后台执行的任务，在后台线程执行  
     		 
-    		 publishProgress (0); //将会调用onProgressUpdate(Integer... progress)方法
+    		 //publishProgress (0); //将会调用onProgressUpdate(Integer... progress)方法
     		 
-    		 ViolationAcquirer cdm = new ViolationAcquirer ();
-    		 
-    		 Date dt = cdm.getDatebaseUpdateDate();
-    		 
-    		 publishProgress (100);
+    		 //publishProgress (100);
 
-    		 return dt;
+    		 return new ViolationAcquirer ().getDatebaseUpdateDate();
     	 }
     	 
     	 @Override
@@ -394,7 +395,7 @@ public class LunarActivity extends Activity {
     	 
     	 @Override
     	 protected void onProgressUpdate(Integer... progress) {//在调用publishProgress之后被调用，在ui线程执行  
-          }  
+         }  
    
     	 @Override
          protected void onPostExecute(ViolationResult vr) {//后台任务执行完之后被调用，在ui线程执行  

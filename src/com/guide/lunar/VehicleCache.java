@@ -88,7 +88,7 @@ public class VehicleCache {
 									",[vehicleType] text NOT NULL COLLATE NOCASE" +
 									",[licenseNumber] text UNIQUE NOT NULL COLLATE NOCASE" +
 									",[engineNumber] text NOT NULL COLLATE NOCASE" +
-									",[databaseUpdateDate] text NOT NULL COLLATE NOCASE" +
+									",[databaseUpdateDate] text COLLATE NOCASE" + // 因为网络故障可能会导致无法获取该日期，所以这个字段有为null的可能
 									",[%s] text NOT NULL COLLATE NOCASE" +
 									");",
 									TABLE_VIOLATION_INDEX,
@@ -358,12 +358,18 @@ public class VehicleCache {
 
 	// 增加指定车辆的违章信息
 	public void addViolationData (Date currDatabaseDate, ViolationManager vm) {
-		// 首先检查之前记录的车辆数据日期是否为当前数据库日期
-		Date d = queryViolationDatabaseDate (vm.getLicenseNumber ());
 		
-		// 如果缓存中的记录为最新记录则返回
-		if (d != null && !currDatabaseDate.after(d)) {
-			return;
+		// 当网络不通或者网络不好时，将会无法取得违章数据库日期，这时 currDatabaseDate 会是 null
+		// 当 currDatabaseDate为null时，因无法比较具体时间，所以不检查上次缓存中的存入时间，直接将这次查询结果存入缓存
+		if (currDatabaseDate != null) {
+			// 首先检查之前记录的车辆违章数据日期是否为当前查询的数据库日期
+			// 这个日期值就是上次查询时网站违章数据的更新日期，这个值会因网络问题获取不到，所以下面的返回有可能是 null
+			Date d = queryViolationDatabaseDate (vm.getLicenseNumber ());
+			
+			// 如果缓存中的记录为最新记录则返回
+			if (d != null && !currDatabaseDate.after(d)) {
+				return;
+			}
 		}
 		
 		// 删除之前的车辆违章记录
@@ -373,11 +379,11 @@ public class VehicleCache {
 
 		// 在索引表中插入车辆违章数据库日期记录
 		ContentValues cv = new ContentValues ();
-		cv.put(COLUMN_DATABASE_UPDATE_DATE, Utility.Date2Str(currDatabaseDate, "yyyy-MM-dd"));
 		cv.put(COLUMN_VEHICLE_TYPE, vm.getVehicleType());
 		cv.put(COLUMN_LICENSE_NUMBER, vm.getLicenseNumber());
 		cv.put(COLUMN_ENGINE_NUMBER, vm.getEngineNumber());
-		cv.put(COLUMN_QUERY_DATABASE_DATE, Utility.Date2Str(new Date (), RemoteDatabaseInfo.queryDateFormat)); // 查询网站违章数据库的时间
+		cv.put(COLUMN_DATABASE_UPDATE_DATE, Utility.Date2Str(currDatabaseDate, "yyyy-MM-dd")); //因为可能遇到网络问题导致无法获取违章数据更新日期，所以 这个是有可能为 null 值的
+		cv.put(COLUMN_QUERY_DATABASE_DATE, Utility.Date2Str(new Date (), RemoteDatabaseInfo.queryDateFormat)); // 此次查询网站违章数据库的时间
 		db.insert(TABLE_VIOLATION_INDEX, null, cv);
 		
 		// 在违章数据表中插入车辆违章数据记录
@@ -444,7 +450,9 @@ public class VehicleCache {
 	}
 
 	// 查询缓存中指定车辆违章数据的更新日期
-	// 如无车辆信息，则返回null
+	// 有两种原因导致返回值为null
+	// 一是无车辆信息，则返回null
+	// 二是上次保存车辆违章数据时，因为网络故障未取到违章数据更新日期
 	public Date queryViolationDatabaseDate (String licenseNumber) {
 		dbOpen ();
 
@@ -466,6 +474,30 @@ public class VehicleCache {
 		return Utility.Str2Date(updateDate, "yyyy-MM-dd");
 	}
 
+	// 查询缓存中指定车辆违章数据的上次查询日期时间
+	// 这个不应该会返回 null
+	public Date queryViolationLastQueryDate (String licenseNumber) {
+		dbOpen ();
+
+		// 查询索引记录表，是否存在指定车辆的违章信息
+		Cursor c = db.query(TABLE_VIOLATION_INDEX, null,
+				COLUMN_LICENSE_NUMBER + "=?",
+				new String[]{licenseNumber}, 
+				null, null, null);
+
+		String lastQueryDate = null;
+		
+		// 查询到车辆信息
+		if (c.moveToFirst()) {
+			lastQueryDate = c.getString(c.getColumnIndexOrThrow(COLUMN_QUERY_DATABASE_DATE));
+		}
+
+		dbClose ();
+
+		return Utility.Str2Date(lastQueryDate, "yyyy-MM-dd HH:mm:ss");
+	}
+
+	
 	// 获取指定车辆的违章信息
 	public ViolationManager queryViolationData (ViolationManager.VehicleData vd) {
 		// 查询索引记录表，是否存在指定车辆的违章信息
