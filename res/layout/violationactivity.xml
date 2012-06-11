@@ -19,6 +19,16 @@
             android:layout_height="match_parent"
             android:orientation="vertical" >
 
+			<TextView
+			    android:id="@+id/tvWarnMsg"
+	            android:layout_width="match_parent"
+	            android:layout_height="wrap_content"
+	            android:gravity="center"
+	            android:visibility="gone"
+	            android:text="@string/tvDataFromCache"
+	            android:textColor="#FF0000"
+	            android:background="#000000"
+	            android:textAppearance="?android:attr/textAppearanceSmall" />
 
             <FrameLayout
                 android:id="@android:id/tabcontent"

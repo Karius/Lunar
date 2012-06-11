@@ -15,10 +15,13 @@ import java.util.Map;
 import java.util.HashMap;
 
 public class ViolationActivity extends Activity {
+	public static final String PARAM_WARN_NETWORK_FAULT = "warn_network_fault";
+	
 	
 	public static final int LOCAL  = 0;
 	public static final int NONLOCAL = 1;
 
+	private TextView tvWarnMsg;
 	private Button button_back;
 	private TabHost tabHost;
 	private RadioButton[] tabBtnArray;
@@ -46,6 +49,8 @@ public class ViolationActivity extends Activity {
 		setListeners ();
 		
 		initData ();
+		
+		handleExternalParam ();
 	}
 	
 	private void initData () {
@@ -109,6 +114,8 @@ public class ViolationActivity extends Activity {
     {
     	button_back = (Button) findViewById(R.id.btnBack);
     	
+    	tvWarnMsg = (TextView) findViewById(R.id.tvWarnMsg);
+    	
     	tvLocalCount = (TextView) findViewById (R.id.tvLocalCount);
     	tvNonlocalCount = (TextView) findViewById (R.id.tvRemoteCount);
     	
@@ -128,6 +135,11 @@ public class ViolationActivity extends Activity {
 
     }
     
+    private void handleExternalParam () {
+    	Intent i = getIntent();
+    	// 根据传入参数来决定是否显示警告栏
+    	showWarnMessage (i.getBooleanExtra(ViolationActivity.PARAM_WARN_NETWORK_FAULT, false));
+    }
     private void setViolationCount (int btnType, int count) {
     	TextView tv = (btnType == LOCAL) ? tvLocalCount : tvNonlocalCount;
     	tv.setVisibility((count > 0) ? View.VISIBLE : View.INVISIBLE);
@@ -153,6 +165,11 @@ public class ViolationActivity extends Activity {
     		}
     		index++;
     	}
+    }
+    
+    // 显示警告标题
+    private void showWarnMessage (boolean isShow) {
+    	tvWarnMsg.setVisibility(isShow ? View.VISIBLE : View.GONE);
     }
     
     private class OnTabClickListener implements View.OnClickListener {
