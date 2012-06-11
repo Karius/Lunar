@@ -205,7 +205,6 @@ public class LunarActivity extends Activity {
         // 如果当前网络有问题，则告知ViolationActivity显示警告信息栏
     	intent.putExtra(ViolationActivity.PARAM_WARN_NETWORK_FAULT, Utility.checkNetworkAvailable(this) == 0);
         startActivity(intent);
-        return;
     }
 
     private void queryViolationData (boolean fromCache) {
@@ -237,6 +236,13 @@ public class LunarActivity extends Activity {
 	    			
 	    			if (null != vm) { // 如果吃哦你缓存中读取成功则显示他们
 		    			startViolationActivity (vm);
+//	    				((MainApp)getApplication ()).setViolationManager(vm);
+//	    				Intent intent = new Intent();		
+//	    		        intent.setClass(LunarActivity.this, ViolationActivity.class);
+//	    		        // 如果当前网络有问题，则告知ViolationActivity显示警告信息栏
+//	    		    	intent.putExtra(ViolationActivity.PARAM_WARN_NETWORK_FAULT, Utility.checkNetworkAvailable(this) == 0);
+//	    		        startActivity(intent);
+		    			return;
 	    			}
 	    		}
     		}
