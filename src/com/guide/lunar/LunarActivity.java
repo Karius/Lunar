@@ -215,8 +215,10 @@ public class LunarActivity extends Activity {
 	    		Date lastQueryDate = vc.queryViolationLastQueryDate(mVehicleData.licenseNumber);
 	
 	    		if (
+	    			// 如果当前无任何网络连接，则直接返回缓存中数据
+	    			(Utility.checkNetworkAvailable(this) == 0)
 		    		// 检查网站更新日期与本地缓存中的日期是否相等，相等则读取缓存
-	    			(databaseDate != null && mDatabaseUpdateDate != null && !mDatabaseUpdateDate.after(databaseDate))
+	    			|| (databaseDate != null && mDatabaseUpdateDate != null && !mDatabaseUpdateDate.after(databaseDate))
 	    			// 如果缓存中上次联网查询时的违章数据更新时间未知 或者 当前 违章数据库更新日期未知（因为这代表着可能是网络故障），同时此次查询距离上次查询时间不足一小时，则直接返回缓存中记录
 	    			|| ((databaseDate == null || mDatabaseUpdateDate == null) && Utility.getMinuteBetween(new Date (), lastQueryDate) <= 60)
 	    			) {
@@ -295,6 +297,7 @@ public class LunarActivity extends Activity {
      		 for (int i=0;i<titleList.length;i++) {
      			 titleList[i] = vdList.get(i).licenseNumber;
      		 }
+     		 
 
      		 new AlertDialog.Builder(LunarActivity.this)
      		 	.setTitle("查询历史")     		 
@@ -314,6 +317,9 @@ public class LunarActivity extends Activity {
                 	 }
                 	 actvLicenseNumber.setText(vd.licenseNumber);
                 	 actvEngineNumber.setText(vd.engineNumber);
+                	 // 设置该车历史记录最后访问时间为当前时间
+                	 VehicleCache vc = new VehicleCache (LunarActivity.this);
+                	 vc.setVehicleHistoryLastAcceptTime (vd.licenseNumber);
                  }
      		 }).show ();
           }

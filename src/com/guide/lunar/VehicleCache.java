@@ -16,13 +16,16 @@ public class VehicleCache {
 	public final static String	DATABASE_NAME = "DataCache.db";
 	
 	public final static String  TABLE_DATABASE_INFO = "ViolationDatabaseInfo"; // 网站上的违章数据库的相关信息，主要是更新日期
-	public final static String	TABLE_VEHICLE_INFO = "VehicleInfo"; // 存放汽车牌号、发动机号的历史信息表
+	public final static String	TABLE_VEHICLE_INFO = "VehicleQueryHistory"; // 存放汽车牌号、发动机号的历史信息表
 	public final static String	TABLE_VIOLATION_INDEX = "ViolationIndex"; // 违章信息索引表
 	public final static String	TABLE_VIOLATION_DATA = "ViolationCache"; // 存放违章信息缓存数据表
 	
 	// 列名
 	// 获取网站数据库更新日期时的具体日期
 	public final static String COLUMN_QUERY_DATABASE_DATE = "databaseQueryDate";
+	
+	// 最后访问此数据的时间
+	public final static String COLUMN_LAST_ACCEPT_TIME = "lastAcceptTime";
 
 	//数据库更新日期
 	public final static String COLUMN_DATABASE_UPDATE_DATE = "databaseUpdateDate";
@@ -77,21 +80,29 @@ public class VehicleCache {
 					
 					String.format("CREATE TABLE \"%s\"(" +
 									"[id] integer PRIMARY KEY AUTOINCREMENT UNIQUE NOT NULL" +
-									",[vehicleType] text NOT NULL COLLATE NOCASE" +
-									",[licenseNumber] text NOT NULL UNIQUE COLLATE NOCASE" +
-									",[engineNumber] text NOT NULL COLLATE NOCASE" +
+									",[%s] text NOT NULL COLLATE NOCASE" +
+									",[%s] text NOT NULL UNIQUE COLLATE NOCASE" +
+									",[%s] text NOT NULL COLLATE NOCASE" +
+									",[%s] DATE NOT NULL DEFAULT (datetime('now','localtime'))" +
 									");",
-									TABLE_VEHICLE_INFO),
+									TABLE_VEHICLE_INFO,
+									COLUMN_VEHICLE_TYPE,
+									COLUMN_LICENSE_NUMBER,
+									COLUMN_ENGINE_NUMBER,
+									COLUMN_LAST_ACCEPT_TIME),
 
 					String.format("CREATE TABLE \"%s\" (" + 
 									"[id] integer PRIMARY KEY AUTOINCREMENT UNIQUE NOT NULL" +
-									",[vehicleType] text NOT NULL COLLATE NOCASE" +
-									",[licenseNumber] text UNIQUE NOT NULL COLLATE NOCASE" +
-									",[engineNumber] text NOT NULL COLLATE NOCASE" +
+									",[%s] text NOT NULL COLLATE NOCASE" +
+									",[%s] text UNIQUE NOT NULL COLLATE NOCASE" +
+									",[%s] text NOT NULL COLLATE NOCASE" +
 									",[databaseUpdateDate] text COLLATE NOCASE" + // 因为网络故障可能会导致无法获取该日期，所以这个字段有为null的可能
 									",[%s] text NOT NULL COLLATE NOCASE" +
 									");",
 									TABLE_VIOLATION_INDEX,
+									COLUMN_VEHICLE_TYPE,
+									COLUMN_LICENSE_NUMBER,
+									COLUMN_ENGINE_NUMBER,
 									COLUMN_QUERY_DATABASE_DATE),
 
 					String.format("CREATE TABLE \"%s\" (" + 
@@ -250,7 +261,8 @@ public class VehicleCache {
 							null,
 							null,
 							null, null,
-							null);
+							//null,
+							COLUMN_LAST_ACCEPT_TIME + " DESC");
 		
 
 		if (c.moveToFirst()){
@@ -285,7 +297,7 @@ public class VehicleCache {
 							COLUMN_LICENSE_NUMBER + "=?",
 							new String[]{licenseNumber},
 							null, null,
-							"DESC");
+							COLUMN_LAST_ACCEPT_TIME + " DESC");
 		ViolationManager.VehicleData vd = null;
 
 		if (c.moveToFirst()) {
@@ -297,8 +309,20 @@ public class VehicleCache {
 		}
 
 		dbClose ();
+		
 		return vd;
 	}
+
+//
+//	// 移动该车辆到数据库历史表末尾
+//	public void moveVehicleToLast (String licenseNumber) {
+//		ViolationManager.VehicleData vd = queryVehicleInfo (licenseNumber);
+//
+//		if (vd != null) {
+//			deleteVehicleInfo (licenseNumber);
+//			addVehicleInfo (vd);
+//		}
+//	}
 
 	// 删除指定车辆数据历史信息
 	// licenseNumber: 车辆牌照
@@ -320,6 +344,24 @@ public class VehicleCache {
 		return true;
 	}
 
+	//http://stackoverflow.com/questions/754684/how-to-insert-a-sqlite-record-with-a-datetime-set-to-now-in-android-applicatio
+	
+	// 设置最好访问时间为当前时间
+	public void setVehicleHistoryLastAcceptTime (String licenseNumber) {
+		dbOpen ();		
+//		db.execSQL(String.format("INSERT INTO %s (%s) VALUES (datetime('now', 'localtime'));",
+//				TABLE_VEHICLE_INFO,
+//				COLUMN_LAST_ACCEPT_TIME)
+//				);
+		db.execSQL(String.format("UPDATE %s SET %s=datetime('now', 'localtime') WHERE %s=\"%s\";",
+				TABLE_VEHICLE_INFO,
+				COLUMN_LAST_ACCEPT_TIME,
+				COLUMN_LICENSE_NUMBER,
+				licenseNumber
+				));
+		dbClose();
+	}
+
 	// 新增车辆信息
 	public boolean addVehicleInfo (ViolationManager.VehicleData vd) {
 		// 一般需要首先先查数据表中是否已存在该车辆的信息数据
@@ -331,6 +373,8 @@ public class VehicleCache {
 		cv.put(COLUMN_VEHICLE_TYPE, vd.vehicleType);
 		cv.put(COLUMN_LICENSE_NUMBER, vd.licenseNumber);
 		cv.put(COLUMN_ENGINE_NUMBER, vd.engineNumber);
+		// 该字段在建表时设为默认值为当前时间
+		//cv.put(COLUMN_LAST_ACCEPT_TIME, "");
 		
 		dbOpen ();
 		db.insert(TABLE_VEHICLE_INFO, null, cv);

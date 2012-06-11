@@ -80,6 +80,10 @@ public class Utility {
 		return null;
 	}
 
+	// ÍøÂç×´Ì¬£¬ÈýÖÖ
+	// 0: ÎÞÍøÂç
+	// 1:WIFI
+	// 2:2G/3G
 	static public int checkNetworkAvailable (Context paramContext) {
 		ConnectivityManager mConnectivity = (ConnectivityManager)paramContext.getSystemService(Context.CONNECTIVITY_SERVICE);
 		TelephonyManager mTelephony = (TelephonyManager)paramContext.getSystemService(Context.TELEPHONY_SERVICE);
