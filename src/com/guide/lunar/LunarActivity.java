@@ -197,6 +197,16 @@ public class LunarActivity extends Activity {
         
         return false;
     }
+    
+    private void startViolationActivity (ViolationManager vm) {
+    	((MainApp)getApplication ()).setViolationManager(vm);
+		Intent intent = new Intent();		
+        intent.setClass(LunarActivity.this, ViolationActivity.class);
+        // 如果当前网络有问题，则告知ViolationActivity显示警告信息栏
+    	intent.putExtra(ViolationActivity.PARAM_WARN_NETWORK_FAULT, Utility.checkNetworkAvailable(this) == 0);
+        startActivity(intent);
+        return;
+    }
 
     private void queryViolationData (boolean fromCache) {
     	if (fromCache) { // 首先从缓存中获取违章数据
@@ -226,13 +236,7 @@ public class LunarActivity extends Activity {
 	    			ViolationManager vm = vc.queryViolationData(mVehicleData);
 	    			
 	    			if (null != vm) { // 如果吃哦你缓存中读取成功则显示他们
-		    			((MainApp)getApplication ()).setViolationManager(vm);
-			    		Intent intent = new Intent();		
-			            intent.setClass(LunarActivity.this, ViolationActivity.class);
-			            // 如果当前网络有问题，则告知ViolationActivity显示警告信息栏
-		            	intent.putExtra(ViolationActivity.PARAM_WARN_NETWORK_FAULT, Utility.checkNetworkAvailable(this) == 0);
-			            startActivity(intent);
-			            return;
+		    			startViolationActivity (vm);
 	    			}
 	    		}
     		}
@@ -441,10 +445,11 @@ public class LunarActivity extends Activity {
        	  		} else {
        	  			new UpdateViolatioinCache ().write(vr.violationManager());
 
-		       	  	((MainApp)getApplication ()).setViolationManager(vr.violationManager());
-		            Intent intent = new Intent();		
-		            intent.setClass(LunarActivity.this, ViolationActivity.class);
-		            startActivity(intent);
+       	  			startViolationActivity (vr.violationManager());
+//		       	  	((MainApp)getApplication ()).setViolationManager(vr.violationManager());
+//		            Intent intent = new Intent();		
+//		            intent.setClass(LunarActivity.this, ViolationActivity.class);
+//		            startActivity(intent);
        	  		}
        	  	}
           }  
