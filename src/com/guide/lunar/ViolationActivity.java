@@ -17,6 +17,16 @@ import java.util.HashMap;
 public class ViolationActivity extends Activity {
 	public static final String PARAM_WARN_NETWORK_FAULT = "warn_network_fault";
 	
+	class TabUserData {
+		public ListView lv;
+		public TextView tv;
+		
+		public TabUserData (TextView tv, ListView lv) {
+			this.lv = lv;
+			this.tv = tv;
+		}
+	}
+	
 	
 	public static final int LOCAL  = 0;
 	public static final int NONLOCAL = 1;
@@ -24,9 +34,12 @@ public class ViolationActivity extends Activity {
 	private TextView tvWarnMsg;
 	private Button button_back;
 	private TabHost tabHost;
-	private RadioButton[] tabBtnArray;
-	private TextView tvLocalCount;
-	private TextView tvNonlocalCount;
+//	private RadioButton[] tabBtnArray;
+//	private TextView[] tabCountArray;
+//	private TextView tvLocalCount;
+//	private TextView tvNonlocalCount;
+	
+	private TabBand mTabGroup;
 	
 	private ListView lvLocal;
 	private ListView lvNonlocal;
@@ -68,12 +81,14 @@ public class ViolationActivity extends Activity {
 		
 		vioManager = ((MainApp)getApplication ()).getViolationManager();
 		
-		setViolationCount (LOCAL, vioManager.localList().size());
-		setViolationCount (NONLOCAL, vioManager.nonlocalList().size());
-		
-		if (vioManager.localList().size () == 0 && vioManager.nonlocalList().size () > 0) {
-			setCurrentTab (1);
-		}
+		setViolationNumber (LOCAL, vioManager.localList().size());
+		setViolationNumber (NONLOCAL, vioManager.nonlocalList().size());
+	
+		// TAB标签默认就是0，这步显式的操作是将第一个标签设置为foucs
+		//setCurrentTab (0);
+//		if (vioManager.localList().size () == 0 && vioManager.nonlocalList().size () > 0) {
+//			setCurrentTab (1);
+//		}
 		
 		// 填充本地数据
 		for (int i=0; i< vioManager.localList().size ();i++) {
@@ -116,23 +131,41 @@ public class ViolationActivity extends Activity {
     	
     	tvWarnMsg = (TextView) findViewById(R.id.tvWarnMsg);
     	
-    	tvLocalCount = (TextView) findViewById (R.id.tvLocalCount);
-    	tvNonlocalCount = (TextView) findViewById (R.id.tvRemoteCount);
-    	
+  //  	tvLocalCount = (TextView) findViewById (R.id.tvLocalCount);
+//    	tvNonlocalCount = (TextView) findViewById (R.id.tvRemoteCount);
+
     	lvLocal = (ListView) findViewById (R.id.lvLocal);
     	lvNonlocal = (ListView) findViewById (R.id.lvNonlocal);
     	tvLocalNone = (TextView) findViewById (R.id.tvLocal);
     	tvNonlocalNone = (TextView) findViewById (R.id.tvNonlocal);
    	
-    	tabBtnArray = new RadioButton[2];
-    	tabBtnArray[0] = (RadioButton) findViewById (R.id.tabBtnLocal);
-    	tabBtnArray[1] = (RadioButton) findViewById (R.id.tabBtnRemote);
+    	// TAB标签预期违章技术气泡
+//    	tabBtnArray = new RadioButton[2];
+//    	tabBtnArray[0] = (RadioButton) findViewById (R.id.tabBtnLocal);
+//    	tabBtnArray[1] = (RadioButton) findViewById (R.id.tabBtnRemote);
+//    	tabCountArray = new TextView[2];
+//    	tabCountArray[0] = (TextView) findViewById (R.id.tvLocalCount);
+//    	tabCountArray[1] = (TextView) findViewById (R.id.tvRemoteCount);
+
+
     	
     	tabHost = (TabHost) findViewById (android.R.id.tabhost);
     	tabHost.setup ();    	
     	tabHost.addTab (tabHost.newTabSpec( "tag1" ).setContent(R.id.tab1).setIndicator (getResources ().getString(R.string.tabLocalInfo)));
     	tabHost.addTab (tabHost.newTabSpec( "tag2" ).setContent(R.id.tab2).setIndicator (getResources ().getString(R.string.tabRemoteInfo)));
 
+    	mTabGroup = new TabBand (tabHost, R.drawable.tab_unread_bg_focus, R.drawable.tab_unread_bg_grey)
+    			.addButton((RadioButton)findViewById(R.id.tabBtnLocal),
+    						(TextView)findViewById(R.id.tvLocalCount),
+    						LOCAL,
+    						new TabUserData(tvLocalNone, lvLocal))
+    			.addButton((RadioButton)findViewById(R.id.tabBtnRemote),
+							(TextView)findViewById(R.id.tvRemoteCount),
+							NONLOCAL,
+							new TabUserData(tvNonlocalNone, lvNonlocal))
+				.setListener()
+				.setCurrentTab(0);
+    	
     }
     
     private void handleExternalParam () {
@@ -140,53 +173,73 @@ public class ViolationActivity extends Activity {
     	// 根据传入参数来决定是否显示警告栏
     	showWarnMessage (i.getBooleanExtra(ViolationActivity.PARAM_WARN_NETWORK_FAULT, false));
     }
-    private void setViolationCount (int btnType, int count) {
-    	TextView tv = (btnType == LOCAL) ? tvLocalCount : tvNonlocalCount;
-    	tv.setVisibility((count > 0) ? View.VISIBLE : View.INVISIBLE);
-    	tv.setText(Integer.toString(count));
-    	
-    	if (LOCAL == btnType) {
-    		tvLocalNone.setVisibility((count > 0) ? View.GONE : View.VISIBLE);
-    		lvLocal.setVisibility((count > 0) ? View.VISIBLE : View.GONE);
-    	} else if (NONLOCAL == btnType) {
-    		tvNonlocalNone.setVisibility((count > 0) ? View.GONE : View.VISIBLE);
-    		lvNonlocal.setVisibility((count > 0) ? View.VISIBLE : View.GONE);
-    	}
-    }
     
-    private void setCurrentTab (int pos) {
-    	int index = 0;
-    	for (RadioButton tabBtn:tabBtnArray) {
-    		if (pos == index) {
-    			tabBtn.setChecked(true);
-    			tabHost.setCurrentTab(index);
-    		} else {
-    			tabBtn.setChecked(false);
-    		}
-    		index++;
-    	}
+    private void setViolationNumber (int btnId, int number) {
+    	mTabGroup.setBadgeNumber(btnId, number);
+
+    	TabUserData tud = (TabUserData)mTabGroup.getUserData(btnId);
+    	tud.tv.setVisibility((number > 0) ? View.GONE : View.VISIBLE);
+    	tud.lv.setVisibility((number > 0) ? View.VISIBLE : View.GONE);
+
+//    	if (LOCAL == btnId) {
+//			tvLocalNone.setVisibility((number > 0) ? View.GONE : View.VISIBLE);
+//			lvLocal.setVisibility((number > 0) ? View.VISIBLE : View.GONE);
+//		} else if (NONLOCAL == btnId) {
+//			tvNonlocalNone.setVisibility((number > 0) ? View.GONE : View.VISIBLE);
+//			lvNonlocal.setVisibility((number > 0) ? View.VISIBLE : View.GONE);
+//		}
     }
+//    private void setViolationCount (int btnType, int count) {
+//    	TextView tv = tabCountArray[btnType];
+//    	tv.setVisibility((count > 0) ? View.VISIBLE : View.INVISIBLE);
+//    	tv.setText(Integer.toString(count));
+//    	
+//    	if (LOCAL == btnType) {
+//    		tvLocalNone.setVisibility((count > 0) ? View.GONE : View.VISIBLE);
+//    		lvLocal.setVisibility((count > 0) ? View.VISIBLE : View.GONE);
+//    	} else if (NONLOCAL == btnType) {
+//    		tvNonlocalNone.setVisibility((count > 0) ? View.GONE : View.VISIBLE);
+//    		lvNonlocal.setVisibility((count > 0) ? View.VISIBLE : View.GONE);
+//    	}
+//    }
+    
+//    //@drawable/tab_unread_bg
+//    private void setCurrentTab (int pos) {
+//    	int index = 0;
+//    	for (RadioButton tabBtn:tabBtnArray) {
+//    		if (pos == index) {
+//    			tabBtn.setChecked(true);
+//    			tabHost.setCurrentTab(index);
+//    			tabCountArray[index].setBackgroundResource(R.drawable.tab_unread_bg_focus);
+//    		} else {
+//    			tabBtn.setChecked(false);
+//    			tabCountArray[index].setBackgroundResource(R.drawable.tab_unread_bg_grey);
+//    		}
+//    		index++;
+//    	}
+//    }
+//    
+//    private void setCurrentTab (View v) {
+//    	int index = 0;
+//    	for (RadioButton tabBtn:tabBtnArray) {
+//    		if (v == tabBtn) {
+//    			setCurrentTab (index);
+//    		}
+//    		index++;
+//    	}    	
+//    }
     
     // 显示警告标题
     private void showWarnMessage (boolean isShow) {
     	tvWarnMsg.setVisibility(isShow ? View.VISIBLE : View.GONE);
     }
     
-    private class OnTabClickListener implements View.OnClickListener {
-      public void onClick(View v)
-      {
-    	  int index = 0;
-    	  for (RadioButton tabBtn:tabBtnArray) {
-    		  if (v == tabBtn) {
-    			  tabBtn.setChecked(true);
-    			  tabHost.setCurrentTab(index);
-    		  } else {
-    			  tabBtn.setChecked(false);
-    		  }
-    		  index++;
-    	  }
-      }
-	}
+//    private class OnTabClickListener implements View.OnClickListener {
+//      public void onClick(View v)
+//      {
+//    	  setCurrentTab (v);
+//      }
+//	}
     
     private void setListeners() {
     	button_back.setOnClickListener(new Button.OnClickListener()
@@ -197,9 +250,9 @@ public class ViolationActivity extends Activity {
 	          }
 	    	});
     	
-    	for (RadioButton tabBtn:tabBtnArray) {
-    		tabBtn.setOnClickListener(new OnTabClickListener ());
-    	}
+//    	for (RadioButton tabBtn:tabBtnArray) {
+//    		tabBtn.setOnClickListener(new OnTabClickListener ());
+//    	}
      }
     
  }
