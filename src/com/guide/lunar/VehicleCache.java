@@ -227,27 +227,28 @@ public class VehicleCache {
 	}
 	
 	// 根据数据库表中的相关信息来猜测获取网站数据库更新日期
-	public String getDatabaseUpdateDate () {
-		// 从数据库缓存中读取违章数据库更新日期
-		RemoteDatabaseInfo rdi = readRemoteDatabaseInfo ();
-		
-		// 数据库中无记录则返回null，表示需要从网站更新违章数据库信息
-		if (null == rdi) {
-			return null;
-		}
-		
-		Date currDate = new Date ();
-
-		long days = Utility.getDayBetween(rdi.databaseDate, currDate);
-		long minutes = Utility.getMinuteBetween(rdi.queryDate, currDate);
-		
-		// 为同一天，或者小于两天，则不需从网站更新日期信息，直接 使用数据库缓存中的日期信息
-		if ((days <= 1) 
-			|| (days >= 2 && minutes < 60)) {
-			return Utility.Date2Str(rdi.databaseDate, RemoteDatabaseInfo.databaseDateFormat);			
-		}
-		return null;
-	}
+	// 该函数废弃，直接放在Activity中
+//	public String getDatabaseUpdateDate () {
+//		// 从数据库缓存中读取违章数据库更新日期
+//		RemoteDatabaseInfo rdi = readRemoteDatabaseInfo ();
+//		
+//		// 数据库中无记录则返回null，表示需要从网站更新违章数据库信息
+//		if (null == rdi) {
+//			return null;
+//		}
+//		
+//		Date currDate = new Date ();
+//
+//		long days = Utility.getDayBetween(rdi.databaseDate, currDate);
+//		long minutes = Utility.getMinuteBetween(rdi.queryDate, currDate);
+//		
+//		// 为同一天，或者小于两天，则不需从网站更新日期信息，直接 使用数据库缓存中的日期信息
+//		if ((days <= 1) 
+//			|| (days >= 2 && minutes < 60)) {
+//			return Utility.Date2Str(rdi.databaseDate, RemoteDatabaseInfo.databaseDateFormat);			
+//		}
+//		return null;
+//	}
 
 	/////////////////////////////////////////////////////////////////////////////////
 	// 获取所有车辆数据

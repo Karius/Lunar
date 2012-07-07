@@ -32,6 +32,7 @@ import android.os.AsyncTask;
 
 import com.guide.lunar.Utility;
 import com.guide.lunar.ViolationAcquirer;
+import com.guide.lunar.VehicleCache.RemoteDatabaseInfo;
 
 public class LunarActivity extends Activity {
     /** Called when the activity is first created. */
@@ -43,14 +44,11 @@ public class LunarActivity extends Activity {
         initComponents ();
         setListeners ();
         
-        // 尝试从数据库缓存中更新违章数据库日期
-        boolean isOk = updateDatabaseDateFromCache ();
-
-        if (checkNetwork ()) {
-        	if (!isOk) {
-	        	updateDatabaseDate ();
-        	}
-	    }
+        // 首先尝试从数据库缓存中更新违章数据库日期
+       	if (!updateDatabaseDateFromCache ()) {
+       		// 如果从数据库中更新缓存失败则从网络读取数据库日期
+       		updateDatabaseDate ();
+       	}
     }
     
     private ImageButton btn_history;
@@ -168,16 +166,48 @@ public class LunarActivity extends Activity {
    	 vt.vibrate(500);    	 
     }
 
+    // 尝试从缓存中读取违章数据库更新日期
+    // 同时判断更新日期与当前日期相差时间是否需要直接从网站读取数据
     private boolean updateDatabaseDateFromCache () {
-    	// 是否允许首先从数据库缓存中读取更新日期
     	VehicleCache vc = new VehicleCache (LunarActivity.this);
-    	String updateDate = vc.getDatabaseUpdateDate();
-    	if (updateDate != null) {
-    		mDatabaseUpdateDate = Utility.Str2Date (updateDate, "yyyy-MM-dd");
-    		tvDatabaseDate.setText(updateDate);
-    		return true;
-    	}
-    	return false;
+    	// 从数据库缓存中读取违章数据库更新日期
+		VehicleCache.RemoteDatabaseInfo rdi = vc.readRemoteDatabaseInfo ();
+		
+		// 数据库中无记录则返回null，表示需要从网站更新违章数据库信息
+		if (null == rdi) {
+			return false;
+		}
+		
+		// 获取当前日期
+		Date currDate = new Date ();
+		// 计算数据库日期与当前时间相差天数
+		long days = Utility.getDayBetween(rdi.databaseDate, currDate);
+		// 计算数据库日期与当前时间相差分钟数
+		long minutes = Utility.getMinuteBetween(rdi.queryDate, currDate);
+
+		mDatabaseUpdateDate = rdi.databaseDate;
+		tvDatabaseDate.setText(Utility.Date2Str(rdi.databaseDate, RemoteDatabaseInfo.databaseDateFormat));
+
+		// 两者如果相差小于两天，则不需从网站更新日期信息，直接 使用数据库缓存中的日期信息
+		if ((days <= 1) 
+			|| (days >= 2 && minutes < 60)) {
+			tvDatabaseDate.setTextColor(android.graphics.Color.RED);
+			return true;
+		}
+		
+		tvDatabaseDate.setTextColor(android.graphics.Color.GRAY);
+		return false;
+		//return null;
+
+    	// 首先从数据库缓存中读取更新日期
+    	//VehicleCache vc = new VehicleCache (LunarActivity.this);
+//    	String updateDate = vc.getDatabaseUpdateDate();
+//    	if (updateDate != null) {
+//    		mDatabaseUpdateDate = Utility.Str2Date (updateDate, "yyyy-MM-dd");
+//    		tvDatabaseDate.setText(updateDate);
+//    		return true;
+//    	}
+//    	return false;
     }
     private void updateDatabaseDate () {
     	DatabaseDateUpdateTask ddut = new DatabaseDateUpdateTask ();
@@ -236,12 +266,6 @@ public class LunarActivity extends Activity {
 	    			
 	    			if (null != vm) { // 如果吃哦你缓存中读取成功则显示他们
 		    			startViolationActivity (vm);
-//	    				((MainApp)getApplication ()).setViolationManager(vm);
-//	    				Intent intent = new Intent();		
-//	    		        intent.setClass(LunarActivity.this, ViolationActivity.class);
-//	    		        // 如果当前网络有问题，则告知ViolationActivity显示警告信息栏
-//	    		    	intent.putExtra(ViolationActivity.PARAM_WARN_NETWORK_FAULT, Utility.checkNetworkAvailable(this) == 0);
-//	    		        startActivity(intent);
 		    			return;
 	    			}
 	    		}
@@ -346,6 +370,7 @@ public class LunarActivity extends Activity {
      };
      
 
+     // 违章数据库更新日期TASK
      private void showUpdateDateProgressBar (boolean isShow) {
      	pbUpdateDatabaseDate.setVisibility(isShow ? View.VISIBLE : View.INVISIBLE);
      }
@@ -367,7 +392,8 @@ public class LunarActivity extends Activity {
    
     	 @Override
          protected void onPostExecute(Date updateDate) {//后台任务执行完之后被调用，在ui线程执行  
-              if(updateDate != null) {
+             // 违章数据库日期获取成功 
+    		 if(updateDate != null) {
             	  // 将违章数据库日期放入数据库缓存中，以备下次直接使用
             	  VehicleCache vc = new VehicleCache (LunarActivity.this);
             	  vc.writeRemoteDatabaseInfo(updateDate);
@@ -375,6 +401,7 @@ public class LunarActivity extends Activity {
             	  mDatabaseUpdateDate = updateDate;
             	  SimpleDateFormat sdf = new SimpleDateFormat ("yyyy-MM-dd");
             	  tvDatabaseDate.setText(sdf.format(updateDate));
+            	  tvDatabaseDate.setTextColor(android.graphics.Color.RED); // 设置日期颜色为新鲜色
                   //Toast.makeText(LunarActivity.this, "数据库日期更新完成", Toast.LENGTH_LONG).show();  
               } else {  
                   Toast.makeText(LunarActivity.this, "数据库日期更新失败，请检查网络连接", Toast.LENGTH_LONG).show();  

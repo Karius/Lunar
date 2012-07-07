@@ -68,7 +68,7 @@ public class TabBand {
 			mMainTabHost.setCurrentTab(pos);
 			tb.mTabButton.setChecked(true);
 			tb.mBadgeNumber.setBackgroundResource(mFocusBg);
-			if (prevTb != null) {
+			if (prevTb != null  && tb != prevTb) {
 				prevTb.mTabButton.setChecked(false);
     			prevTb.mBadgeNumber.setBackgroundResource(mDefocusBg);
 			}

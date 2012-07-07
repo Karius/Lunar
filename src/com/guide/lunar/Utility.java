@@ -10,6 +10,7 @@ import android.net.NetworkInfo;
 import android.telephony.TelephonyManager;
 
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.text.ParseException;
 
@@ -56,6 +57,21 @@ public class Utility {
 		
 		return (to - from) / (1000 * 60 * 60 * 24);
 	}
+	
+	// 计算指定日期为星期几
+    /**
+     * 判断当前日期是星期几<br>
+     * <br>
+     * @param d 修要判断的时间<br>
+     * @return dayForWeek 判断结果<br>
+     * @Exception 发生异常<br>
+     */
+	 public static int dayForWeek(Date d) throws Exception {
+	  Calendar c = Calendar.getInstance();
+	  c.setTime(d);
+
+	  return c.get(Calendar.DAY_OF_WEEK) == 1 ? 7 : c.get(Calendar.DAY_OF_WEEK) - 1;
+	 }
 
 	// "yyyy-MM-dd"
 	static public Date Str2Date (String s, String fmt) {
